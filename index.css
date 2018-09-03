@@ -1,0 +1,105 @@
+@import url('https://fonts.googleapis.com/css?family=Gothic+A1');
+html, body{
+    margin:0px;
+    height:100%;
+    font-family: 'Gothic A1', sans-serif;
+}
+body{
+    box-sizing:border-box;
+}
+textarea, select, input, button { outline: none; }
+.left{
+    width: 1120px;
+    height: 100%;
+    float:left;
+    display:inline-block;
+    overflow: hidden;
+}
+.right{
+    width: 780px;
+    height: inherit;
+    overflow: hidden;
+    display: inline-flex;
+    justify-content: center;
+    float:left;
+}
+
+
+.title{
+    font-weight: bold;
+    font-size:40px;
+    color:#5C74B7;
+    letter-spacing:7px;
+    padding-top:275px;
+    padding-bottom:75px;
+    width:450px;
+    display: inline-flex;
+    justify-content: center;
+}
+.box{
+    width:406px;
+    display:block;
+    height:80px;
+    margin-bottom: 20px;
+    padding:0;
+    color:#787878;
+    font-size:35px;
+    font-weight:500;
+    padding-left:40px;
+    border:#787878 2px solid;
+    border-radius: 2px;
+}
+
+.box::placeholder {
+    color: #CECECE; 
+    font-size: 35px; 
+    font-weight:300;
+}
+.login{
+    margin-top:40px;
+    width:450px;
+    display:inline-flex;
+    height:80px;
+    color:#FFFFFF;
+    font-size:35px;
+    font-weight:700;
+    letter-spacing:6px;
+    border-radius: 2px;
+    background:linear-gradient( to right, #95ACDC, #5C74B7   );
+    align-items: center;
+    justify-content: center;
+    
+}
+.login > span{
+    width:150px;
+}
+.login > span > img{
+    margin-left:30px;
+    transition: margin 700ms;
+}
+.login:hover > span > img{
+    margin-left:80px;
+}
+
+.support{
+    margin-top:20px;
+    width:444px;
+    height:74px;
+    color: #5C74B7;
+    
+    font-size:35px;
+    font-weight:700;
+    letter-spacing:3px;
+    border-radius: 2px;
+    
+    background:linear-gradient( to right, #95ACDC, #5C74B7   );
+    padding:3px;
+}
+.support > div{
+    width: inherit;
+    height: inherit;
+    background: #ffffff;
+    display:inline-flex;
+    align-items: center;
+    justify-content: center;
+}
