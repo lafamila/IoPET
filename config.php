@@ -1,6 +1,6 @@
 <?php
     function query($q, $one, $json){
-        $conn = mysqli_connect("localhost", "lafamila", "Als01060", "lafamila");
+        $conn = mysqli_connect("localhost", "root", "123456789", "iopet");
         $result = mysqli_query($conn, $q);
         if(mysqli_num_rows($result) == 0){
             return false;
