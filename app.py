@@ -43,7 +43,7 @@ def main():
         if data != False:
             hospt_name = data["HOSPITAL_NAME"]
             pet_id = request.args.get('pet')
-            return render_template("main.html", hospt_name=hospt_name, pet_id=pet_id)
+            return render_template("main.html", hospt_name=hospt_name, pet_id=pet_id, hospt_id=hospt_id)
 
         else:
             return redirect('/index')
