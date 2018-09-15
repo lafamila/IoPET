@@ -1,8 +1,26 @@
 from config import query
 from flask import Flask, request, session, redirect, render_template
-
+from flask_socketio import SocketIO, send
 
 app = Flask(__name__)
+socket = SocketIO(app)
+
+@app.route('/chat')
+def chat():
+	return render_template('chat.html')
+
+
+@socket.on("message")
+def message(msg):
+    print("message : " + msg)
+    result = dict()
+    if msg == "new_connect":
+        result['message'] = 'New User'
+        result['type'] = 'connect'
+    else:
+        result['message'] = msg
+        result['type'] = 'normal'
+    send(result, broadcast=True)
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -10,7 +28,7 @@ def login():
     user_pw = request.form.get('password')
     q = "SELECT * FROM `hospital` WHERE `HOSPITAL_USER_ID` = %s AND `HOSPITAL_USER_PW` = %s"
     data = query(q, True, False, user_id, user_pw)
-    if data != False:
+    if data:
         session['hospital_id'] = data["HOSPITAL_ID"]
         return "true";
     else:
@@ -40,13 +58,12 @@ def main():
         q = "SELECT * FROM `hospital` WHERE `HOSPITAL_ID` = %s";
         data = query(q, True, False, hospt_id)
 
-        if data != False:
+        if data:
             hospt_name = data["HOSPITAL_NAME"]
             pet_id = request.args.get('pet')
             return render_template("main.html", hospt_name=hospt_name, pet_id=pet_id, hospt_id=hospt_id)
 
-        else:
-            return redirect('/index')
+    return redirect('/index')
 
 @app.route('/')
 def index():
@@ -67,4 +84,6 @@ def disease():
 
 if __name__ == "__main__":
     app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
-    app.run()
+    #app.run(host="0.0.0.0", port=5000)
+    socket.run(app, port=5000, host='0.0.0.0')
+    # socket.run(app)

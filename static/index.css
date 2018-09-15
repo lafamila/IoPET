@@ -1,27 +1,26 @@
 @import url('https://fonts.googleapis.com/css?family=Gothic+A1');
 html, body{
     margin:0px;
-    height:100%;
     font-family: 'Gothic A1', sans-serif;
 }
 body{
     box-sizing:border-box;
+    height: 100vh;
+    max-height:100vh;
 }
 textarea, select, input, button { outline: none; }
-.left{
-    width: 1120px;
-    height: 100%;
-    float:left;
-    display:inline-block;
-    overflow: hidden;
+
+.wrapper{
+    display: grid;
+    grid-template-columns: 103.88vh 1fr;
+    grid-auto-rows: 100vh;
+    overflow:hidden;
 }
-.right{
-    width: 780px;
-    height: inherit;
-    overflow: hidden;
+
+.wrapper-right{
+
     display: inline-flex;
     justify-content: center;
-    float:left;
 }
 
 

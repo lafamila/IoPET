@@ -11,8 +11,16 @@ def query(q, isOne, isJson, *data):
 
     if not rows:
         return False
-    elif isOne:
+
+    else:
+        for row in rows:
+            for k, v in row.items():
+                if type(v) != type(1) or type(v) != type('1'):
+                    row[k] = str(v)
+
+    if isOne:
         rows = rows[0]
+
 
     if isJson:
         return json.dumps(rows)

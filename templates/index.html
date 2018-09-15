@@ -1,4 +1,4 @@
-﻿<!DOCTYPE HTML>
+<!DOCTYPE HTML>
 <html>
 
     <head>
@@ -8,20 +8,58 @@
 
     <body>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-        <div class="left">
-            <img src="{{url_for('static', filename='img/left.png') }}">
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        <div class="wrapper">
+        
+            <div>
+                
+                <img src="{{url_for('static', filename='img/left.png') }}" height="100%">
+            </div>
+
+            <div class="wrapper-right">
+                <div>
+                    <div class="title">MEMBER LOGIN</div>
+                    <input type="text" id="username" placeholder="Username" class="box">
+                    <input type="password" id="password" placeholder="Password" class="box">
+                    <div class="login">
+                        시작하기<span><img src="{{url_for('static', filename='img/arrow.png') }}"></span>
+                    </div>
+                    <div></div>
+                    <div class="support">
+                        <div>이용하기</div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
-        <div class="right">
-            <div>
-            <div class="title">MEMBER LOGIN</div>
-            <input type="text" id="username" placeholder="Username" class="box">
-            <input type="password" id="password" placeholder="Password" class="box">
-            <div class="login">시작하기<span><img src="{{url_for('static', filename='img/arrow.png') }}"></span></div>
-            <div></div>
-            <div class="support"><div>이용하기</div></div>
-            </div>
-        </div>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         <script>
         
             $('.login').click(function(){
