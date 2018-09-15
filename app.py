@@ -1,7 +1,7 @@
 from config import query
-from flask import Flask, request, session, redirect, render_template
+from flask import Flask, request, session, redirect, render_template, url_for
 from flask_socketio import SocketIO, send
-
+import os
 app = Flask(__name__)
 socket = SocketIO(app)
 
@@ -81,6 +81,20 @@ def disease():
         else:
             s = {r["DISEASE_ID"] for r in result}
     return query("SELECT * FROM disease WHERE DISEASE_ID = %s" + " OR DISEASE_ID = %s" * (len(s) - 1), isOne=False, isJson=True, *tuple(s))
+
+
+@app.context_processor
+def override_url_for():
+    return dict(url_for=dated_url_for)
+
+def dated_url_for(endpoint, **values):
+    if endpoint == 'static':
+        filename = values.get('filename', None)
+        if filename:
+            file_path = os.path.join(app.root_path,
+                                 endpoint, filename)
+            values['q'] = int(os.stat(file_path).st_mtime)
+    return url_for(endpoint, **values)
 
 if __name__ == "__main__":
     app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
