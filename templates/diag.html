@@ -1,10 +1,60 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <link href="{{ url_for('static', filename='diag.css') }}" rel="stylesheet">
-</head>
-<body>
+    <head>
+        <meta charset="UTF-8">
+        <link href="{{ url_for('static', filename='diag.css') }}" rel="stylesheet">
+    </head>
+    <body>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="{{url_for('static', filename='transform.js') }}"></script>
+        <script>
+            var diagnosises;
+            $(document).ready(function() {
+                $(".chat").click(function(){
+                    window.open('/chat');
+                });
+                $.ajax({
+                    url : '/load_personal',
+                    success : function(data){
+//                        console.log(JSON.stringify(data));
+                        for(key in transform(data)){
+//                            console.log('#'+key.toLowerCase());
+//                            console.log(data[key]);
+                            $('#'+key.toLowerCase()).html(data[key]);
+                        }
+                        $.ajax({
+                           url : '/load_diagnosis',
+                            success : function(data){
+                                diagnosises = data;
+                                for(var i=0;i<data.length;i++){
+                                    var html = "<div class='content-prev' data-item='"+i+"'>"+data[i].DIAGN_DATE.split(" ")[0]+"</div>";
+                                    $('#cell-prev').append(html);
+
+                                }
+                            },
+                            type : 'post',
+                            dataType: 'json',
+                            data : {pet_id : "{{pet_id}}", hospt_id : "{{hospt_id}}"}
+                        });
+
+                    },
+                    fail : function(){
+                        alert("asdfasdfasdf");
+                    },
+                    type : 'post',
+                    dataType: 'json',
+                    data : {pet_id : "{{pet_id}}"}
+                });
+
+            });
+
+            $(document).on('click','.content-prev',function(){
+                $( ".content-prev" ).removeClass('selected');
+                $(this).addClass('selected');
+                $('#cell-prev-c').html(diagnosises[$(this).attr("data-item")].DIAGN_OPINION);
+            });
+        </script>
+
         <div class="container-1">
             <div class="title">개인정보</div>
             <div class="title">이전진료</div>
@@ -64,5 +114,5 @@
             </div>
         </div>
 
-</body>
+    </body>
 </html>

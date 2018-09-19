@@ -143,12 +143,8 @@
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script>
-
-            $(document).on('click','.num',function(){
-                $( ".act" ).removeClass('act');
-                $(this).addClass('act');
-            });
-            $(document).ready(function() {
+            var page_id;
+            function allPerson(){
                 $.ajax({
                     url : '/allPerson',
                     success : function(data){
@@ -172,9 +168,18 @@
                     },
                     type : 'post',
                     dataType: 'json',
-                    data : {hospt_id : "{{hospt_id}}"}
+                    data : {hospt_id : "{{hospt_id}}", page : $('.act').data('item')}
                 });
-
+            }
+            $(document).on('click','.num',function(){
+                $( ".act" ).removeClass('act');
+                $(this).addClass('act');
+                $('.content-table').empty();
+                allPerson();
+            });
+            $(document).ready(function() {
+                $('.content-table').empty();
+                allPerson();
             });
 
     </script>
@@ -189,11 +194,11 @@
             <div></div>
             <div class="paging">
                 <div class="arrow">&lt;</div>
-                <div class="num">1</div>
-                <div class="act num">2</div>
-                <div class="num">3</div>
-                <div class="num">4</div>
-                <div class="num">5</div>
+                <div class="act num" data-item="1">1</div>
+                <div class="num" data-item="2">2</div>
+                <div class="num" data-item="3">3</div>
+                <div class="num" data-item="4">4</div>
+                <div class="num" data-item="5">5</div>
                 <div class="arrow">&gt;</div>
             </div>
         </div>

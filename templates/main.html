@@ -8,58 +8,13 @@
 
     <body>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-        <script src="{{url_for('static', filename='transform.js') }}"></script>
         <script>
-            var diagnosises;
-            $(document).ready(function() {
-                $(".chat").click(function(){
-                    window.open('/chat');
-                });
-                $.ajax({
-                    url : '/load_personal',
-                    success : function(data){
-//                        console.log(JSON.stringify(data));
-                        for(key in transform(data)){
-//                            console.log('#'+key.toLowerCase());
-//                            console.log(data[key]);
-                            $('#'+key.toLowerCase()).html(data[key]);
-                        }
-                        $.ajax({
-                           url : '/load_diagnosis',
-                            success : function(data){
-                                diagnosises = data;
-                                for(var i=0;i<data.length;i++){
-                                    var html = "<div class='content-prev' data-item='"+i+"'>"+data[i].DIAGN_DATE.split(" ")[0]+"</div>";
-                                    $('#cell-prev').append(html);
-                                    
-                                }
-                            },
-                            type : 'post',
-                            dataType: 'json',
-                            data : {pet_id : "{{pet_id}}", hospt_id : "{{hospt_id}}"}
-                        });
-                            
-                    },
-                    fail : function(){
-                        alert("asdfasdfasdf");
-                    },
-                    type : 'post',
-                    dataType: 'json', 
-                    data : {pet_id : "{{pet_id}}"}
-                });
-            
-            });
-            
-            $(document).on('click','.content-prev',function(){
-                $( ".content-prev" ).removeClass('selected');
-                $(this).addClass('selected');
-                $('#cell-prev-c').html(diagnosises[$(this).attr("data-item")].DIAGN_OPINION);
-            });
+
             $(document).on('click','.menu>li',function(){
                 if($(this).attr('class') != 'chat'){
                     $( ".act" ).removeClass('act');
                     $(this).addClass('act');
-                    $('#frame').attr('src', '/'+$(this).attr('id'));
+                    $('#frame').attr('src', '/'+$(this).attr('id')+'?pet={{pet_id}}');
                     $('#frame').attr('class', 'iframe-'+$(this).attr('id'));
                 }
             });
@@ -85,7 +40,7 @@
         </div>
         <div class="frame">
 
-    		<iframe id="frame" width="100%" height="100%" src="/diag" frameborder="0" scrolling="no"></iframe>
+    		<iframe id="frame" width="100%" height="100%" src="/diag?pet={{pet_id}}" frameborder="0" scrolling="no"></iframe>
 
         </div>
     </body>

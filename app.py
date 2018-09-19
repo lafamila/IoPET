@@ -58,27 +58,33 @@ def personal():
 @app.route('/allPerson', methods=['POST'])
 def allPerson():
     hospt_id = request.form.get('hospt_id')
-    q = "SELECT * FROM `diagnosis` WHERE `HOSPITAL_ID` = %s ORDER BY `DIAGN_DATE` DESC"
-    diags = query(q, False, False, hospt_id)
+    page = request.form.get('page')
+    if page is None:
+        page = 0
+    elif type(page) != type(1):
+        page = int(page) - 1
+    page = page * 12
+    q = "SELECT * FROM `diagnosis` WHERE `HOSPITAL_ID` = %s ORDER BY `DIAGN_DATE` DESC LIMIT  %s, 12"
+    diags = query(q, False, False, hospt_id, page)
+    if diags:
+        contents = []
 
-    contents = []
+        cache = {}
+        for diag in diags:
+            pet_id = diag['PET_ID']
+            if pet_id in cache:
+                pet = cache[pet_id]
+            else:
+                q = "SELECT * FROM `pet` WHERE `HOSPITAL_ID` = %s AND `PET_ID` = %s"
+                pet = query(q, True, False, hospt_id, pet_id)
+                cache[pet_id] = pet
 
-    cache = {}
-    for diag in diags:
-        pet_id = diag['PET_ID']
-        if pet_id in cache:
-            pet = cache[pet_id]
-        else:
-            q = "SELECT * FROM `pet` WHERE `HOSPITAL_ID` = %s AND `PET_ID` = %s"
-            pet = query(q, True, False, hospt_id, pet_id)
-            cache[pet_id] = pet
-
-        content = copy.deepcopy(pet)
-        content['DIAGN_DATE'] = diag['DIAGN_DATE']
-        content['DIAGN_NAME'] = diag['DIAGN_NAME']
-        contents.append(content)
-    return json.dumps(contents)
-
+            content = copy.deepcopy(pet)
+            content['DIAGN_DATE'] = diag['DIAGN_DATE']
+            content['DIAGN_NAME'] = diag['DIAGN_NAME']
+            contents.append(content)
+        return json.dumps(contents)
+    return json.dumps([])
 
 @app.route('/main', methods=['GET'])
 def main():
@@ -130,9 +136,20 @@ def dated_url_for(endpoint, **values):
 
 
 
-@app.route('/diag')
+@app.route('/diag', methods=['GET'])
 def diag():
-    return render_template('diag.html')
+    if "hospital_id" in session:
+
+        hospt_id = session["hospital_id"];
+        q = "SELECT * FROM `hospital` WHERE `HOSPITAL_ID` = %s";
+        data = query(q, True, False, hospt_id)
+
+        if data:
+            hospt_name = data["HOSPITAL_NAME"]
+            pet_id = request.args.get('pet')
+            return render_template('diag.html', hospt_name=hospt_name, pet_id=pet_id, hospt_id=hospt_id)
+
+    return redirect('/index')
 
 @app.route('/person')
 def person():
