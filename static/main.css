@@ -110,176 +110,24 @@ textarea, select, input, button { outline: none; }
 }
 .act{
     color:#5C74B7 !important;
-}
-
-
-/**  CONTAINER  **/
-
-.container-1{
-    display:grid;
-    grid-template-columns: 480fr 555fr 885fr;
-    grid-template-rows: 35fr 210fr;
-    height:22.685vh;
-}
-.container-2{
-    display:grid;
-    grid-template-columns: 1420fr 500fr;
-    grid-template-rows: 60fr 515fr;
-    height:53.24vh;
-}
-
-.personal{
-    display:grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 2fr;
-}
-#pet_contact, #pet_spec, #pet_profile{
-    grid-column-start: 2; 
-    grid-column-end: 5; 
-}
-#pet_name, #pet_person{
-    letter-spacing:5px;
-}
-.prev{
-    display:grid;
-    grid-template-columns: 5fr 11fr;
-}
-.selected{
-    background:#DFDFDF;
-}
-.content-prev{
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    float:left;
-    width:100%;
-    height:2.77vh;
-    border-bottom:#7B7B7B 0.7px solid;
-    color:#000000;
-}
-.content-cell-prev{
-    overflow-y:auto;
-    border-left:#7B7B7B 0.7px solid;
-    height:19.44vh;
-    
-}
-.content-cell-prev-c{
-    overflow-y:scroll;
-    padding:10px;
-    padding-left:20px;
-    padding-right:20px;
-    word-wrap:break-word;
-    height:17.59vh;
-    border-left:#7B7B7B 0.7px solid;
-}
-
-.diagnosis{
-    border:none;
-    padding:20px;
-    margin: 0;
-    font-family: 'Gothic A1', sans-serif;
-    font-size:15px;
-    line-height: 1.6em;    
-    border-left:#7B7B7B 0.7px solid;
-
-}
-.cell{
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-.title{
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background:#DFDFDF;
     font-weight: bold;
-    color:#7B7B7B;
+
 }
 
-.title-big{
-    font-size:20px;
-}
-.title-search{
-    font-size:20px;
-    background:#5C74B7;
-    display:grid;
-    grid-template-columns: 480fr 940fr;
-}
-
-.search{
+.frame{
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: center;
+    height:75.92vh;
+    background:#F0F4FF;
+    width:100%;
 }
-.search>input[type="text"]{
-    width:48.43vw;
 
-    height:4.63vh;
-    border: none;
-    font-size:20px;
-    font-weight: bold;
-    text-align: center;
+.iframe-diag{
+    width:177.78vh;
 }
-.search-container{
-    display:grid;
-    grid-template-columns: 300fr 800fr 320fr;
-    grid-template-rows: 300fr 35fr 180fr;
-}
-.submit-container{
-    display:grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 365fr 60fr 90fr;
-}
-.medicine{
-    grid-column-start: 2; 
-    grid-column-end: 4; 
-    grid-row-start: 1; 
-    grid-row-end: 2; 
-}
-.select{
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color:#ffffff;
-    
-    font-weight: bold;
-}
-.opinion{
-    grid-column-start: 1; 
-    grid-column-end: 3; 
-
-    padding:20px;
-    border:0;
-    font-family: 'Gothic A1', sans-serif;
-    font-size:15px;
-    line-height: 1.6em;
-}
-.total-container{
-    box-shadow: 0 -5px 5px -5px #7B7B7B;
-    grid-column-start: 1; 
-    grid-column-end: 3; 
-    display:grid;
-    grid-template-columns: 1fr 1fr;
-}
-.total-content{
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size:20px;
-}
-.submit, .check{
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size:26px;
-}
-.submit{
-    background:#5C74B7;
-    color:#ffffff;
-    float:right;
-}
-.check{
-    background:#DFDFDF;
-    color:#000000;
+.iframe-person{
+    width:164.81vh;
+    height:68.52vh;
+    box-shadow:0px 0px 2px rgba(0, 0, 0, 0.12);
 }

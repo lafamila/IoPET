@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link href="{{ url_for('static', filename='diag.css') }}" rel="stylesheet">
+</head>
+<body>
+        <div class="container-1">
+            <div class="title">개인정보</div>
+            <div class="title">이전진료</div>
+            <div class="title">현재진료</div>
+
+            <div class="personal">
+                <div class="title">이&nbsp; &nbsp; &nbsp; 름</div>
+                <div class="cell" id="pet_name"></div>
+                <div class="title">보 호 자</div>
+                <div class="cell" id="pet_person"></div>
+                <div class="title">품&nbsp; &nbsp; &nbsp; 종</div>
+                <div class="cell" id="pet_spec"></div>
+                <div class="title">나&nbsp; &nbsp; &nbsp; 이</div>
+                <div class="cell" id="pet_age"></div>
+                <div class="title">입원여부</div>
+                <div class="cell" id="pet_adms"></div>
+                <div class="title">성&nbsp; &nbsp; &nbsp; 별</div>
+                <div class="cell" id="pet_sex"></div>
+                <div class="title">체&nbsp; &nbsp; &nbsp; 중</div>
+                <div class="cell" id="pet_weight"></div>
+                <div class="title">연 락 처</div>
+                <div class="cell" id="pet_contact"></div>
+                <div class="title">특이사항</div>
+                <div class="cell" id="pet_profile"></div>
+            </div>
+            <div class="prev">
+                <div id="cell-prev" class="content-cell-prev">
+                </div>
+                <div id="cell-prev-c" class="content-cell-prev-c"></div>
+            </div>
+            <textarea rows="4" style="resize:none;" class="diagnosis"></textarea>
+        </div>
+        <div class="container-2">
+            <div class="title title-search">
+                <div class="select"> 질 병 / 증 상</div>
+                <div class="search"><input type="text"/></div>
+            </div>
+            <div class="title title-big">종합소견</div>
+            <div class="search-container">
+                <div class="result"></div>
+                <div class="medicine"></div>
+                <div class="title">자가관리</div>
+                <div class="title">처방관리</div>
+                <div class="title">수가입력</div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+            <div class="submit-container">
+                <textarea rows="4" style="resize:none;" class="opinion">나트륨이 과다한 음식은 잦은 소변과 심혈관계 질환을 유발할 수 있으니 피해주세요. 한 주에 30분 이상의 운동을 추천합니다. 정기적인 관리를 하지 않으면 쿠싱과 저혈당 쇼크등의 합병증이 유발될 수 있으니 유의해주세요.</textarea>
+                <div class="total-container">
+                    <div class="total-content">합 계</div>
+                    <div class="total-content">110,200 &#8361;</div>
+                </div>
+                <div class="check">검사하기</div>
+                <div class="submit">처방하기</div>
+            </div>
+        </div>
+
+</body>
+</html>
