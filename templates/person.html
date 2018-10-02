@@ -144,7 +144,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script>
             var page_id;
-            function allPerson(){
+            function allPerson(jsons){
                 $.ajax({
                     url : '/allPerson',
                     success : function(data){
@@ -168,18 +168,20 @@
                     },
                     type : 'post',
                     dataType: 'json',
-                    data : {hospt_id : "{{hospt_id}}", page : $('.act').data('item')}
+                    data : jsons
                 });
             }
             $(document).on('click','.num',function(){
                 $( ".act" ).removeClass('act');
                 $(this).addClass('act');
                 $('.content-table').empty();
-                allPerson();
+
+                allPerson({hospt_id : "{{hospt_id}}", page : $('.act').data('item')});
             });
             $(document).ready(function() {
                 $('.content-table').empty();
-                allPerson();
+
+                allPerson({hospt_id : "{{hospt_id}}", page : $('.act').data('item'), num : 'all'});
             });
 
     </script>

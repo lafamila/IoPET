@@ -32,7 +32,7 @@ def login():
     user_id = request.form.get('username')
     user_pw = request.form.get('password')
     q = "SELECT * FROM `hospital` WHERE `HOSPITAL_USER_ID` = %s AND `HOSPITAL_USER_PW` = %s"
-    data = query(q, True, False, user_id, user_pw)
+    data = query(q, True, True, False, user_id, user_pw)
     if data:
         session['hospital_id'] = data["HOSPITAL_ID"]
         return "true";
@@ -46,14 +46,14 @@ def diagnosis():
     hospt_id = request.form.get('hospt_id')
     q = "SELECT * FROM `diagnosis` WHERE `PET_ID` = %s AND `HOSPITAL_ID` = %s"
 
-    return query(q, False, True, pet_id, hospt_id)
+    return query(q, True, False, True, pet_id, hospt_id)
 
 @app.route('/load_personal', methods=['POST'])
 def personal():
     pet_id = request.form.get('pet_id');
     q = "SELECT * FROM `pet` WHERE `PET_ID` = %s";
 
-    return query(q, True, True, pet_id);
+    return query(q, True, True, True, pet_id);
 
 @app.route('/allPerson', methods=['POST'])
 def allPerson():
@@ -64,27 +64,23 @@ def allPerson():
     elif type(page) != type(1):
         page = int(page) - 1
     page = page * 12
-    q = "SELECT * FROM `diagnosis` WHERE `HOSPITAL_ID` = %s ORDER BY `DIAGN_DATE` DESC LIMIT  %s, 12"
-    diags = query(q, False, False, hospt_id, page)
+    q = "SELECT * FROM `diagnosis` a, `pet` b WHERE a.`HOSPITAL_ID` = %s AND b.`HOSPITAL_ID` = %s AND b.`PET_ID` = a.`PET_ID` ORDER BY `DIAGN_DATE` DESC LIMIT  %s, 12"
+    diags = query(q, True, False, False, hospt_id, hospt_id, page)
     if diags:
-        contents = []
 
-        cache = {}
-        for diag in diags:
-            pet_id = diag['PET_ID']
-            if pet_id in cache:
-                pet = cache[pet_id]
-            else:
-                q = "SELECT * FROM `pet` WHERE `HOSPITAL_ID` = %s AND `PET_ID` = %s"
-                pet = query(q, True, False, hospt_id, pet_id)
-                cache[pet_id] = pet
-
-            content = copy.deepcopy(pet)
-            content['DIAGN_DATE'] = diag['DIAGN_DATE']
-            content['DIAGN_NAME'] = diag['DIAGN_NAME']
-            contents.append(content)
-        return json.dumps(contents)
+        # if request.form.get('num'):
+        #     size = len(query("SELECT * FROM `diagnosis` WHERE `HOSPITAL_ID` = %s", True, False, False, hospt_id))
+        #     contents.append(size)
+        return json.dumps(diags)
     return json.dumps([])
+@app.route('/join', methods=['GET'])
+def join():
+    if "hospital_id" in session:
+
+        hospt_id = session["hospital_id"];
+        return render_template("join.html", hospt_id=hospt_id)
+
+    return redirect('/')
 
 @app.route('/main', methods=['GET'])
 def main():
@@ -92,18 +88,32 @@ def main():
 
         hospt_id = session["hospital_id"];
         q = "SELECT * FROM `hospital` WHERE `HOSPITAL_ID` = %s";
-        data = query(q, True, False, hospt_id)
+        data = query(q, True, True, False, hospt_id)
 
         if data:
             hospt_name = data["HOSPITAL_NAME"]
             pet_id = request.args.get('pet')
             return render_template("main.html", hospt_name=hospt_name, pet_id=pet_id, hospt_id=hospt_id)
 
-    return redirect('/index')
+    return redirect('/')
 
 @app.route('/')
 def index():
     return render_template("index.html")
+@app.route('/insert_pet', methods=['POST'])
+def insertPet():
+    ks = []
+    vs = []
+    for k in request.form:
+        ks.append("`"+k+"`")
+        vs.append(request.form.get(k))
+    ks = ",".join(ks)
+    q = "INSERT INTO `pet`({}) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(ks)
+    pet_id = query(q, False, False, False, vs[0], vs[1], vs[2], vs[3], vs[4], vs[5], vs[6], vs[7], vs[8], vs[9])
+    #pet_id를 이용해서 room 등록
+    q = "INSERT INTO `chat_room`(`HOSPITAL_ID`, `PET_ID`) VALUES (%s, %s)"
+    chat_room = query(q, False, False, False, vs[9], pet_id)
+    return "success"
 
 @app.route('/load_disease', methods=['POST'])
 def disease():
@@ -111,12 +121,12 @@ def disease():
     words = request.form.getlist('word[]')
 
     for word in words:
-        result = query("SELECT * FROM disease_symptom WHERE `SYMPTOME_NAME` LIKE %s", False, False, "%{}%".format(word))
+        result = query("SELECT * FROM disease_symptom WHERE `SYMPTOME_NAME` LIKE %s", True, False, False, "%{}%".format(word))
         if len(s) > 0:
             s = s.intersection({r["DISEASE_ID"] for r in result})
         else:
             s = {r["DISEASE_ID"] for r in result}
-    return query("SELECT * FROM disease WHERE DISEASE_ID = %s" + " OR DISEASE_ID = %s" * (len(s) - 1), isOne=False, isJson=True, *tuple(s))
+    return query("SELECT * FROM disease WHERE DISEASE_ID = %s" + " OR DISEASE_ID = %s" * (len(s) - 1), True, isOne=False, isJson=True, *tuple(s))
 
 
 @app.context_processor
@@ -142,14 +152,14 @@ def diag():
 
         hospt_id = session["hospital_id"];
         q = "SELECT * FROM `hospital` WHERE `HOSPITAL_ID` = %s";
-        data = query(q, True, False, hospt_id)
+        data = query(q, True, True, False, hospt_id)
 
         if data:
             hospt_name = data["HOSPITAL_NAME"]
             pet_id = request.args.get('pet')
             return render_template('diag.html', hospt_name=hospt_name, pet_id=pet_id, hospt_id=hospt_id)
 
-    return redirect('/index')
+    return redirect('/')
 
 @app.route('/person')
 def person():
