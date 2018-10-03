@@ -110,24 +110,31 @@ def insertPet():
     ks = ",".join(ks)
     q = "INSERT INTO `pet`({}) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(ks)
     pet_id = query(q, False, False, False, vs[0], vs[1], vs[2], vs[3], vs[4], vs[5], vs[6], vs[7], vs[8], vs[9])
-    #pet_id를 이용해서 room 등록
+
     q = "INSERT INTO `chat_room`(`HOSPITAL_ID`, `PET_ID`) VALUES (%s, %s)"
     chat_room = query(q, False, False, False, vs[9], pet_id)
     return "success"
-
+@app.route('/load_medicine', methods=['POST'])
+def medicine():
+    words1 = request.form.getlist('word1[]')
+    words2 = request.form.getlist('word2[]')
+    return json.dumps({"server" : words1+words2})
 @app.route('/load_disease', methods=['POST'])
 def disease():
     s = set()
-    words = request.form.getlist('word[]')
-
-    for word in words:
-        result = query("SELECT * FROM disease_symptom WHERE `SYMPTOME_NAME` LIKE %s", True, False, False, "%{}%".format(word))
-        if len(s) > 0:
-            s = s.intersection({r["DISEASE_ID"] for r in result})
-        else:
-            s = {r["DISEASE_ID"] for r in result}
-    return query("SELECT * FROM disease WHERE DISEASE_ID = %s" + " OR DISEASE_ID = %s" * (len(s) - 1), True, isOne=False, isJson=True, *tuple(s))
-
+    words2 = request.form.getlist('word2[]')
+    if len(words2) > 0:
+        for word in words2:
+            result = query("SELECT * FROM disease_symptom WHERE `SYMPTOME_NAME` LIKE %s", True, False, False, "%{}%".format(word))
+            if result:
+                if len(s) > 0:
+                    s = s.intersection({r["DISEASE_ID"] for r in result})
+                else:
+                    s = {r["DISEASE_ID"] for r in result}
+            else:
+                continue
+        return query("SELECT * FROM disease WHERE DISEASE_ID = %s" + " OR DISEASE_ID = %s" * (len(s) - 1), True, False, True, *tuple(s))
+    return ""
 
 @app.context_processor
 def override_url_for():

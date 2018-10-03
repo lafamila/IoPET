@@ -8,8 +8,84 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script src="{{url_for('static', filename='transform.js') }}"></script>
         <script>
+            function searchMedicine(){
+                var idArr1 = [];
+                var list1 = $(".searched1");
+                $.each(list1, function () {
+                    if($(this).attr("data-select") == 1)
+                        idArr1.push($(this).html());
+                 });
+
+                var idArr2 = [];
+                var list2 = $(".searched2");
+                $.each(list2, function () {
+                    if($(this).attr("data-select") == 1)
+                        idArr2.push($(this).html());
+                 });
+                $.ajax({
+                    type: "POST",
+                    url: "/load_medicine",
+                    dataType: 'json',
+                    data: { word1: idArr1, word2: idArr2 }, // stringify
+                    success: function(data){
+                        console.log(data);
+                    }
+                });
+            }
+
+            function searchDisease(){
+                var idArr1 = [];
+                var list1 = $(".searched1");
+                $.each(list1, function () {
+                    //if($(this).attr("data-select") == 1)
+                        idArr1.push($(this).html());
+                 });
+
+                var idArr2 = [];
+                var list2 = $(".searched2");
+                $.each(list2, function () {
+                    //if($(this).attr("data-select") == 1)
+                        idArr2.push($(this).html());
+                 });
+                $.ajax({
+                    type: "POST",
+                    url: "/load_disease",
+                    dataType: 'json',
+                    data: { word1: idArr1, word2: idArr2 }, // stringify
+                    success: function(data){
+                        for(var i=0;i<data.length;i++){
+                            $("#searched1").append("<span class='searched1' data-select='0'>"+data[i].DISEASE_NAME+"</span>");
+                        }
+                    }
+                });
+            }
             var diagnosises;
             $(document).ready(function() {
+
+                $(".select").on('click', function(){
+                    if($(".select").html() == "질병"){
+                        $(".select").html("증상");
+                        $(".select").attr("data-item", 1);
+                    }
+                    else{
+                        $(".select").html("질병");
+                        $(".select").attr("data-item", 0);
+                    }
+                });
+                $("#diag_search").on('keyup', function(e) {
+                    if (e.keyCode == 13){
+
+                        let word = $(this).val();
+
+                        if($(".select").attr("data-item") == 0)
+                            $("#searched1").append("<span class='searched1' data-select='0'>"+word+"</span>");
+                        else
+                            $("#searched2").append("<span class='searched2' data-select='0'>"+word+"</span>");
+                        searchDisease();
+
+                    }
+                });
+
                 $(".chat").click(function(){
                     window.open('/chat');
                 });
@@ -53,6 +129,28 @@
                 $(this).addClass('selected');
                 $('#cell-prev-c').html(diagnosises[$(this).attr("data-item")].DIAGN_OPINION);
             });
+            $(document).on('click','.searched1',function(){
+                if($(this).attr("data-select") == 1){
+                    $(this).attr("data-select", 0);
+                    $(this).removeClass('tagSelected');
+                }
+                else{
+                    $(this).attr("data-select", 1);
+                    $(this).addClass('tagSelected');
+                }
+                searchMedicine();
+            });
+            $(document).on('click','.searched2',function(){
+                if($(this).attr("data-select") == 1){
+                    $(this).attr("data-select", 0);
+                    $(this).removeClass('tagSelected');
+                }
+                else{
+                    $(this).attr("data-select", 1);
+                    $(this).addClass('tagSelected');
+                }
+                searchMedicine();
+            });
         </script>
 
         <div class="container-1">
@@ -89,12 +187,19 @@
         </div>
         <div class="container-2">
             <div class="title title-search">
-                <div class="select"> 질 병 / 증 상</div>
-                <div class="search"><input type="text"/></div>
+                <div class="select" data-item="0">질병</div>
+                <div class="search"><input type="text" id="diag_search"/></div>
             </div>
             <div class="title title-big">종합소견</div>
             <div class="search-container">
-                <div class="result"></div>
+                <div class="result">
+                    <div id="searched1">
+                    </div>
+                    <div id="searched2">
+                    </div>
+
+
+                </div>
                 <div class="medicine"></div>
                 <div class="title">자가관리</div>
                 <div class="title">처방관리</div>

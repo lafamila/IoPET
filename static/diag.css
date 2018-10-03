@@ -59,6 +59,13 @@ textarea, select, input, button { outline: none; }
 #pet_name, #pet_person{
     letter-spacing:5px;
 }
+.tagSelected{
+    border:#7B7B7B 1px solid;
+}
+.result{
+    display:grid;
+    grid-template-rows: 1fr 1fr;
+}
 .prev{
     display:grid;
     grid-template-columns: 5fr 11fr;
