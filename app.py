@@ -114,6 +114,7 @@ def insertPet():
     q = "INSERT INTO `chat_room`(`HOSPITAL_ID`, `PET_ID`) VALUES (%s, %s)"
     chat_room = query(q, False, False, False, vs[9], pet_id)
     return "success"
+<<<<<<< HEAD
 @app.route('/load_medicine_category', methods=['POST'])
 def medicineCategory():
     s = set()
@@ -156,6 +157,13 @@ def search():
         return result
     return ""
 
+=======
+@app.route('/load_medicine', methods=['POST'])
+def medicine():
+    words1 = request.form.getlist('word1[]')
+    words2 = request.form.getlist('word2[]')
+    return json.dumps({"server" : words1+words2})
+>>>>>>> 69fe84c62f79bda4d6097797813082b6b946da64
 @app.route('/load_disease', methods=['POST'])
 def disease():
     s = set()
@@ -170,11 +178,15 @@ def disease():
                     s = {r["DISEASE_ID"] for r in result}
             else:
                 continue
+<<<<<<< HEAD
         result = query("SELECT * FROM disease WHERE DISEASE_ID = %s" + " OR DISEASE_ID = %s" * (len(s) - 1), True, False, True, *tuple(s))
         if result:
             return result
         else:
             return ""
+=======
+        return query("SELECT * FROM disease WHERE DISEASE_ID = %s" + " OR DISEASE_ID = %s" * (len(s) - 1), True, False, True, *tuple(s))
+>>>>>>> 69fe84c62f79bda4d6097797813082b6b946da64
     return ""
 
 @app.context_processor
