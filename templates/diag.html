@@ -8,8 +8,138 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script src="{{url_for('static', filename='transform.js') }}"></script>
         <script>
+            function appendDisease(name, disease_id){
+                var idArr1 = [];
+                var list1 = $(".searched1");
+                $.each(list1, function () {
+
+                    idArr1.push($(this).html());
+                 });
+                 if(!idArr1.includes(name)){
+                    $("#searched1").append("<span class='searched1' data-select='0' data-item='"+disease_id+"'>"+name+"</span>");
+                 }
+
+            }
+            function searchMedicine(){
+                var idArr1 = [];
+                var list1 = $(".searched1");
+                $.each(list1, function () {
+                    if($(this).attr("data-select") == 1)
+                        idArr1.push($(this).attr('data-item'));
+                 });
+
+//                var idArr2 = [];
+//                var list2 = $(".searched2");
+//                $.each(list2, function () {
+//                    if($(this).attr("data-select") == 1)
+//                        idArr2.push($(this).html());
+//                 });
+                $.ajax({
+                    type: "POST",
+                    url: "/load_medicine_category",
+                    dataType: 'json',
+                    data: { word1: idArr1 }, // stringify
+                    success: function(data){
+                        $("#medicine-category").empty();
+                        for(var i=0;i<data.length;i++){
+                            $("#medicine-category").append("<div class='medicine-categorys' data-item='"+data[i].CATEGORY_ID+"'>" + data[i].CATEGORY_NAME + "</div>");
+                        }
+                    }
+                });
+            }
+
+            function searchDisease(){
+                var idArr1 = [];
+                var list1 = $(".searched1");
+                $.each(list1, function () {
+                    //if($(this).attr("data-select") == 1)
+                        idArr1.push($(this).html());
+                 });
+
+                var idArr2 = [];
+                var list2 = $(".searched2");
+                $.each(list2, function () {
+                    //if($(this).attr("data-select") == 1)
+                        idArr2.push($(this).html());
+                 });
+                $.ajax({
+                    type: "POST",
+                    url: "/load_disease",
+                    dataType: 'json',
+                    data: { word1: idArr1, word2: idArr2 }, // stringify
+                    success: function(data){
+                        for(var i=0;i<data.length;i++){
+                            //중복검사
+                            appendDisease(data[i].DISEASE_NAME, data[i].DESEASE_ID);
+                        }
+                    }
+                });
+            }
             var diagnosises;
             $(document).ready(function() {
+
+                $(".select").on('click', function(){
+                    if($(".select").html() == "질병"){
+                        $(".select").html("증상");
+                        $(".select").attr("data-item", 1);
+                    }
+                    else{
+                        $(".select").html("질병");
+                        $(".select").attr("data-item", 0);
+                    }
+                });
+                $("#diag_search").on('keyup', function(e) {
+
+                    let word = $(this).val();
+
+                    if (e.keyCode == 13){
+
+
+                        if($(".select").attr("data-item") == 0){
+                            if( $('.searched-list').length > 0){
+                                let result = $('.searched-list').first().html();
+                                let iid = $('.searched-list').first().attr('data-item');
+                                //중복검사
+                                appendDisease(result, iid);
+                                $(this).val("");
+                                $('.search-list').empty();
+
+                            }
+                        }
+                        else{
+                            $("#searched2").append("<span class='searched2' data-select='0'>"+word+"</span>");
+                            $(this).val("");
+                            searchDisease();
+                        }
+
+                    }
+                    else{
+                        if($(".select").attr("data-item") == 0){
+                            if(word.length > 0){
+                                $.ajax({
+                                   url : '/search_disease',
+                                    success : function(data){
+                                        $('.search-list').empty();
+                                        for(var i=0;i<data.length;i++){
+                                            var html = "<div class='searched-list' data-item='"+data[i].DISEASE_ID+"'>"+data[i].DISEASE_NAME+"</div>";
+
+                                            $('.search-list').append(html);
+                                        }
+                                    },
+                                    type : 'post',
+                                    dataType: 'json',
+                                    data : {search : word}
+                                });
+                            }
+                            else{
+                                $('.search-list').empty();
+                            }
+
+                        }
+
+                    }
+                });
+
                 $(".chat").click(function(){
                     window.open('/chat');
                 });
@@ -53,6 +183,77 @@
                 $(this).addClass('selected');
                 $('#cell-prev-c').html(diagnosises[$(this).attr("data-item")].DIAGN_OPINION);
             });
+            $(document).on('click','.searched1',function(){
+                if($(this).attr("data-select") == 1){
+                    $(this).attr("data-select", 0);
+                    $(this).removeClass('tagSelected');
+                }
+                else{
+                    $(this).attr("data-select", 1);
+                    $(this).addClass('tagSelected');
+                }
+                searchMedicine();
+            });
+            $(document).on('click','.searched2',function(){
+                if($(this).attr("data-select") == 1){
+                    $(this).attr("data-select", 0);
+                    $(this).removeClass('tagSelected');
+                }
+                else{
+                    $(this).attr("data-select", 1);
+                    $(this).addClass('tagSelected');
+                }
+                searchMedicine();
+            });
+            $(document).on('mouseover','.searched-list',function(){
+                var currentColor = $(this).css('background-color');
+                $('.searched-list').css('background-color', 'rgba(255, 255, 255, 0.9)');
+                $(this).css('background-color', 'rgba(92, 116, 183, 0.9)');
+                console.log(currentColor);
+                //var lastComma = currentColor.lastIndexOf(')');
+                //var newColor = currentColor.slice(0, lastComma - 1) + ", "+ o + ")";-->
+                //$(e).css('background-color', newColor);
+            });
+
+            $(document).on('click','.searched-list',function(){
+
+                var result = $(this).html();
+                let iid = $(this).attr('data-item');
+                //중복검사
+                appendDisease(result, iid);
+
+                $('#diag_search').val("");
+                $('.search-list').empty();
+            });
+            $(document).on('click','.medicine-categorys',function(){
+                $(".medicine-categorys").css('background-color', '#ffffff');
+                $(this).css('background-color', 'rgba(92, 116, 183, 0.9)');
+                $.ajax({
+                    type: "POST",
+                    url: "/load_medicine",
+                    dataType: 'json',
+                    data: { id: $(this).attr('data-item') }, // stringify
+                    success: function(data){
+                        $("#medicine").empty();
+                        for(var i=0;i<data.length;i++){
+                            $("#medicine").append("<div class='medicines' data-item='"+data[i].MEDI_ID+"' data-text='"+JSON.stringify(data[i])+"'>" + data[i].MEDI_NAME + "</div>");
+                        }
+
+                    }
+                });
+            });
+            $(document).on('click','.medicines',function(){
+                $(".medicines").css('background-color', '#ffffff');
+                $(this).css('background-color', 'rgba(92, 116, 183, 0.9)');
+                //$("medicine-detail").empty();
+                let data = JSON.parse($(this).attr('data-text'));
+                $("#medicine-detail").html(data.MEDI_INTRO);
+
+            });
+            $(document).on('mouseout','.search-list',function(){
+                $('.searched-list').css('background-color', 'rgba(255, 255, 255, 0.9)');
+            });
+
         </script>
 
         <div class="container-1">
@@ -89,13 +290,38 @@
         </div>
         <div class="container-2">
             <div class="title title-search">
-                <div class="select"> 질 병 / 증 상</div>
-                <div class="search"><input type="text"/></div>
+                <div class="select" data-item="0">질병</div>
+                <div class="search">
+                    <form class="search"  onsubmit="return false;">
+                        <input type="text" id="diag_search" autocomplete="off"/>
+                        <div class="search-list">
+                            <div class="searched-list">hello</div>
+                            <div class="searched-list">bye</div>
+                            <div class="searched-list">hello</div>
+                        </div>
+
+                    </form>
+                </div>
             </div>
             <div class="title title-big">종합소견</div>
             <div class="search-container">
-                <div class="result"></div>
-                <div class="medicine"></div>
+                <div class="result">
+                    <div id="searched1">
+                    </div>
+                    <div id="searched2">
+                    </div>
+
+
+                </div>
+                <div class="medicine">
+                    <div class="title">의약품선택</div>
+                    <div class="medicine-container">
+                        <div class="medicine-category" id="medicine-category">
+                        </div>
+                        <div class="medicine-category" id="medicine"></div>
+                        <div id="medicine-detail"></div>
+                    </div>
+                </div>
                 <div class="title">자가관리</div>
                 <div class="title">처방관리</div>
                 <div class="title">수가입력</div>

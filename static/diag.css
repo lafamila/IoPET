@@ -59,6 +59,35 @@ textarea, select, input, button { outline: none; }
 #pet_name, #pet_person{
     letter-spacing:5px;
 }
+.tagSelected{
+    border:#7B7B7B 1px solid;
+}
+.result{
+    display:grid;
+    grid-template-rows: 1fr 1fr;
+
+}
+.medicine{
+    display:grid;
+    grid-template-rows: 1fr 9fr;
+}
+.medicine-container{
+    display:grid;
+    grid-template-columns: 18fr 47fr 47fr;
+}
+.medicine-category{
+    display:grid;
+    grid-template-rows: repeat(9, 1fr);
+    border-right:#7B7B7B 0.5px solid;
+}
+#searched1{
+    border-bottom:#7B7B7B 0.5px solid;
+    border-right:#7B7B7B 0.5px solid;
+}
+
+#searched2{
+    border-right:#7B7B7B 0.5px solid;
+}
 .prev{
     display:grid;
     grid-template-columns: 5fr 11fr;
@@ -130,6 +159,21 @@ textarea, select, input, button { outline: none; }
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+}
+.search-list{
+    position:absolute;
+    top:100%;
+}
+.searched-list{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48.43vw;
+    height: 6.10vh;
+    background-color:rgba(255,255,255,0.9);
+    color:#000000;
+
 }
 .search>input[type="text"]{
     width:48.43vw;
