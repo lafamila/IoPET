@@ -1,6 +1,6 @@
 from config import query
 from flask import Flask, request, session, redirect, render_template, url_for
-from flask_socketio import SocketIO, send
+from flask_socketio import SocketIO, send, join_room, leave_room
 import json
 import os
 import copy
@@ -21,20 +21,20 @@ def chat():
     
 	return render_template('chat.html', hospt_id=session["hospital_id"])
 
+@socket.on('join')
+def on_join(data):
+    room = data['room_id']
+    join_room(room)
+
+@socket.on('leave')
+def on_leave(data):
+    room = data['room_id']
+    leave_room(room)
 
 @socket.on("message")
 def message(msg):
     req = json.loads(msg)
-    print("message : " + msg)
-    result = dict()
-    if req["type"] == "connect":
-        print(req["id"])
-        result['message'] = 'New User'
-        result['type'] = 'connect'
-    else:
-        result['message'] = msg
-        result['type'] = 'normal'
-    send(result, broadcast=True)
+    send(req, broadcast=True, room=req["room_id"])
 
 @app.route('/login', methods=['POST'])
 def login():
