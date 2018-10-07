@@ -137,7 +137,7 @@ def main():
         if data:
             hospt_name = data["HOSPITAL_NAME"]
             pet_id = request.args.get('pet')
-            if pet_id
+            if pet_id:
                 return render_template("main.html", hospt_name=hospt_name, pet_id=pet_id, hospt_id=hospt_id)
             else:
                 return render_template("main.html", hospt_name=hospt_name, pet_id=1, hospt_id=hospt_id)
