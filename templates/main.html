@@ -18,7 +18,11 @@
                     $('#frame').attr('class', 'iframe-'+$(this).attr('id'));
                 }
             });
-
+            $(document).ready(function() {
+                $(".chat").click(function(){
+                    window.open('/chat?pet={{pet_id}}', "popupWindow", "width=600,height=600,scrollbars=no,resizable=no");
+                });
+            }
 
         </script>
         <div class="navBar">
