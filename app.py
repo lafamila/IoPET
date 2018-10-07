@@ -23,8 +23,13 @@ def petLogin():
 
 @app.route('/chat', methods=['GET'])
 def chat():
-    return render_template('chat.html', hospt_id=session["hospital_id"], pet_id=request.args.get("pet"))
-
+    pet_id = request.args.get('pet')
+    q = "SELECT ROOM_ID FROM `pet` join `chat_room` on pet.PET_ID = chat_room.PET_ID and pet.HOSPITAL_ID = chat_room.HOSPITAL_ID WHERE pet.PET_ID = %s";
+    result = query(q, True, True, False, pet_id)
+    if result:
+        return render_template('chat.html', hospt_id=session["hospital_id"], room_id=result["ROOM_ID"])
+    else:
+        return "<h1>Wrong Pet ID</h1>"
 
 @socket.on('join')
 def on_join(data):
@@ -46,8 +51,22 @@ def on_leave(data):
 def message(data):
     print("messaged")
     print(data)
-    emit('received', data, room=data["room_id"], broadcast=True)
+    q = "INSERT INTO `chat`(`ROOM_ID`, `CHAT_SEND`, `CHAT_TYPE`, `CHAT_MESSAGE`, `CHAT_DATETIME`) VALUES (%s, %s, %s, %s, now())"
+    room_id = data["room_id"]
+    sender = 0 if data["sender"] == 'hospt' else 0
+    text = 0 if data["type"] == 'text' else 1
+    query(q, False, False, False, room_id, sender, text, data["message"])
+    emit('received', data, room=room_id, broadcast=True)
 
+@app.route('/chatList', methods=['POST'])
+def getChat():
+    room_id = request.form.get('room_id')
+    q = "SELECT * FROM `chat` WHERE `ROOM_ID` = %s"
+    result = query(q, True, False, True, room_id)
+    if result:
+        return result, 200
+    else:
+        return "", 404
 
 @app.route('/login', methods=['POST'])
 def login():
