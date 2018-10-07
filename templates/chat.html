@@ -11,7 +11,7 @@
 			$(document).ready(function(){
 				var socket = io.connect(window.location.origin);
 				socket.on('connect', function() {
-					socket.emit('join', {room_id: '{{pet_id}}'});
+					socket.emit('join', {room_id: {{pet_id}}});
 				});
 
 		
