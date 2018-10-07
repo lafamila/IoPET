@@ -18,8 +18,9 @@ def petLogin():
     return "", 404
 @app.route('/chat', methods=['GET'])
 def chat():
+
     
-	return render_template('chat.html', hospt_id=session["hospital_id"])
+	return render_template('chat.html', hospt_id=session["hospital_id"], pet_id=request.args.get("pet"))
 
 @socket.on('join')
 def on_join(data):

@@ -10,34 +10,23 @@
 		<script>
 			$(document).ready(function(){
 				var socket = io.connect(window.location.origin);
-				socket.on('connect', function(){
+				socket.on('connect', function() {
+					socket.emit('join', {room_id: '{{pet_id}}'});
+				});
 
-					var msg = {
-						type: "connect",
-						id:   {{hospt_id}}
-					};
-					socket.send(JSON.stringify(msg));
-				});
 		
-				socket.on('hello', function(msg){
-					$('#messages').append('<li>' +'>>Other :'+ msg + '</li>');
-				});
 
 				socket.on('message', function(msg){
 					console.log(msg);
 					console.log(typeof msg);
-					if(msg.type === 'normal'){
-						$('#messages').append('>> '+msg.message+'<br>');
-					}
-					else{
-						$('#messages').append('<li>' + msg.message + '</li>');
-					}
+					$('#messages').append('<li>' +'>>Other :'+ msg + '</li>');
 				});
 
 
 
 				$('#sendButton').on('click', function(){
-					socket.send($('#myMessage').val());
+					$('#messages').append('>> '+$('#myMessage').val()+'<br>');
+					socket.emit('message', {message : $('#myMessage').val(), room_id: '{{pet_id}}'});
 					$('#myMessage').val('');
 				});
 			});
