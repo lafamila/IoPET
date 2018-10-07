@@ -1,11 +1,14 @@
 from config import query
 from flask import Flask, request, session, redirect, render_template, url_for
-from flask_socketio import SocketIO, send, join_room, leave_room
+from flask_socketio import SocketIO, emit, join_room, leave_room
 import json
 import os
 import copy
+
 app = Flask(__name__)
 socket = SocketIO(app)
+
+
 @app.route('/petLogin', methods=['POST'])
 def petLogin():
     pet_id = request.form.get('pet_id');
@@ -16,27 +19,35 @@ def petLogin():
         return result["ROOM_ID"], 200
 
     return "", 404
+
+
 @app.route('/chat', methods=['GET'])
 def chat():
+    return render_template('chat.html', hospt_id=session["hospital_id"], pet_id=request.args.get("pet"))
 
-    
-	return render_template('chat.html', hospt_id=session["hospital_id"], pet_id=request.args.get("pet"))
 
 @socket.on('join')
 def on_join(data):
     room = data['room_id']
+    print("joined")
+    print(data)
     join_room(room)
+
 
 @socket.on('leave')
 def on_leave(data):
     room = data['room_id']
+    print("leaved")
+    print(data)
     leave_room(room)
 
+
 @socket.on("message")
-def message(msg):
-    req = msg
-    print(req)
-    send(req, broadcast=True, room=req["room_id"])
+def message(data):
+    print("messaged")
+    print(data)
+    emit('message', data, room=data["room_id"])
+
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -59,12 +70,14 @@ def diagnosis():
 
     return query(q, True, False, True, pet_id, hospt_id)
 
+
 @app.route('/load_personal', methods=['POST'])
 def personal():
     pet_id = request.form.get('pet_id');
     q = "SELECT * FROM `pet` WHERE `PET_ID` = %s";
 
     return query(q, True, True, True, pet_id)
+
 
 @app.route('/allPerson', methods=['POST'])
 def allPerson():
@@ -78,20 +91,21 @@ def allPerson():
     q = "SELECT * FROM `diagnosis` a, `pet` b WHERE a.`HOSPITAL_ID` = %s AND b.`HOSPITAL_ID` = %s AND b.`PET_ID` = a.`PET_ID` ORDER BY `DIAGN_DATE` DESC LIMIT  %s, 12"
     diags = query(q, True, False, False, hospt_id, hospt_id, page)
     if diags:
-
         # if request.form.get('num'):
         #     size = len(query("SELECT * FROM `diagnosis` WHERE `HOSPITAL_ID` = %s", True, False, False, hospt_id))
         #     contents.append(size)
         return json.dumps(diags)
     return json.dumps([])
+
+
 @app.route('/join', methods=['GET'])
 def join():
     if "hospital_id" in session:
-
         hospt_id = session["hospital_id"];
         return render_template("join.html", hospt_id=hospt_id)
 
     return redirect('/')
+
 
 @app.route('/main', methods=['GET'])
 def main():
@@ -108,15 +122,18 @@ def main():
 
     return redirect('/')
 
+
 @app.route('/')
 def index():
     return render_template("index.html")
+
+
 @app.route('/insert_pet', methods=['POST'])
 def insertPet():
     ks = []
     vs = []
     for k in request.form:
-        ks.append("`"+k+"`")
+        ks.append("`" + k + "`")
         vs.append(request.form.get(k))
     ks = ",".join(ks)
     q = "INSERT INTO `pet`({}) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(ks)
@@ -125,6 +142,8 @@ def insertPet():
     q = "INSERT INTO `chat_room`(`HOSPITAL_ID`, `PET_ID`) VALUES (%s, %s)"
     chat_room = query(q, False, False, False, vs[9], pet_id)
     return "success"
+
+
 @app.route('/load_medicine_category', methods=['POST'])
 def medicineCategory():
     s = set()
@@ -139,13 +158,15 @@ def medicineCategory():
                     s = {r["CATEGORY_ID"] for r in result}
             else:
                 continue
-        result = query("SELECT * FROM medicine_category WHERE CATEGORY_ID = %s" + " OR CATEGORY_ID = %s" * (len(s) - 1), True, False, True, *tuple(s))
+        result = query("SELECT * FROM medicine_category WHERE CATEGORY_ID = %s" + " OR CATEGORY_ID = %s" * (len(s) - 1),
+                       True, False, True, *tuple(s))
         if result:
             return result
         else:
             return ""
 
     return ""
+
 
 @app.route('/load_medicine', methods=['POST'])
 def medicine():
@@ -158,6 +179,7 @@ def medicine():
 
     return ""
 
+
 @app.route('/search_disease', methods=['POST'])
 def search():
     word = request.form.get('search')
@@ -167,13 +189,15 @@ def search():
         return result
     return ""
 
+
 @app.route('/load_disease', methods=['POST'])
 def disease():
     s = set()
     words2 = request.form.getlist('word2[]')
     if len(words2) > 0:
         for word in words2:
-            result = query("SELECT * FROM disease_symptom WHERE `SYMPTOME_NAME` LIKE %s", True, False, False, "%{}%".format(word))
+            result = query("SELECT * FROM disease_symptom WHERE `SYMPTOME_NAME` LIKE %s", True, False, False,
+                           "%{}%".format(word))
             if result:
                 if len(s) > 0:
                     s = s.intersection({r["DISEASE_ID"] for r in result})
@@ -181,28 +205,28 @@ def disease():
                     s = {r["DISEASE_ID"] for r in result}
             else:
                 continue
-        result = query("SELECT * FROM disease WHERE DISEASE_ID = %s" + " OR DISEASE_ID = %s" * (len(s) - 1), True, False, True, *tuple(s))
+        result = query("SELECT * FROM disease WHERE DISEASE_ID = %s" + " OR DISEASE_ID = %s" * (len(s) - 1), True,
+                       False, True, *tuple(s))
         if result:
             return result
         else:
             return ""
     return ""
 
+
 @app.context_processor
 def override_url_for():
     return dict(url_for=dated_url_for)
+
 
 def dated_url_for(endpoint, **values):
     if endpoint == 'static':
         filename = values.get('filename', None)
         if filename:
             file_path = os.path.join(app.root_path,
-                                 endpoint, filename)
+                                     endpoint, filename)
             values['q'] = int(os.stat(file_path).st_mtime)
     return url_for(endpoint, **values)
-
-
-
 
 
 @app.route('/diag', methods=['GET'])
@@ -220,12 +244,14 @@ def diag():
 
     return redirect('/')
 
+
 @app.route('/person')
 def person():
     return render_template('person.html', hospt_id=session["hospital_id"])
 
+
 if __name__ == "__main__":
     app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
-    #app.run(host="0.0.0.0", port=5000)
+    # app.run(host="0.0.0.0", port=5000)
     socket.run(app, port=5000, host='0.0.0.0')
     # socket.run(app)
