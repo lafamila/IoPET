@@ -86,16 +86,16 @@ def diagnosis():
     pet_id = request.form.get('pet_id')
     hospt_id = request.form.get('hospt_id')
     q = "SELECT * FROM `diagnosis` WHERE `PET_ID` = %s AND `HOSPITAL_ID` = %s"
-
-    return query(q, True, False, True, pet_id, hospt_id)
+    result = query(q, True, False, True, pet_id, hospt_id)
+    return result if result else []
 
 
 @app.route('/load_personal', methods=['POST'])
 def personal():
     pet_id = request.form.get('pet_id');
     q = "SELECT * FROM `pet` WHERE `PET_ID` = %s";
-
-    return query(q, True, True, True, pet_id)
+    result = query(q, True, True, True, pet_id)
+    return result if result else []
 
 
 @app.route('/allPerson', methods=['POST'])
