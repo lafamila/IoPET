@@ -16,10 +16,10 @@
 
 		
 
-				socket.on('message', function(msg){
+				socket.on('back', function(msg){
 					console.log(msg);
 					console.log(typeof msg);
-					$('#messages').append('<li>' +'>>Other :'+ msg + '</li>');
+					$('#messages').append('<li>' +'>>Other :'+ msg.message + '</li>');
 				});
 
 
