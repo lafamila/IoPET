@@ -34,23 +34,17 @@ def chat():
 @socket.on('join')
 def on_join(data):
     room = data['room_id']
-    print("joined")
-    print(data)
     join_room(room)
 
 
 @socket.on('leave')
 def on_leave(data):
     room = data['room_id']
-    print("leaved")
-    print(data)
     leave_room(room)
 
 
 @socket.on("message")
 def message(data):
-    print("messaged")
-    print(data)
     q = "INSERT INTO `chat`(`ROOM_ID`, `CHAT_SEND`, `CHAT_TYPE`, `CHAT_MESSAGE`, `CHAT_DATETIME`) VALUES (%s, %s, %s, %s, now())"
     room_id = data["room_id"]
     sender = 0 if data["sender"] == 'hospt' else 1
@@ -87,7 +81,7 @@ def diagnosis():
     hospt_id = request.form.get('hospt_id')
     q = "SELECT * FROM `diagnosis` WHERE `PET_ID` = %s AND `HOSPITAL_ID` = %s"
     result = query(q, True, False, True, pet_id, hospt_id)
-    return result if result else []
+    return result if result else ""
 
 
 @app.route('/load_personal', methods=['POST'])
@@ -95,7 +89,7 @@ def personal():
     pet_id = request.form.get('pet_id');
     q = "SELECT * FROM `pet` WHERE `PET_ID` = %s";
     result = query(q, True, True, True, pet_id)
-    return result if result else []
+    return result if result else ""
 
 
 @app.route('/allPerson', methods=['POST'])
@@ -181,10 +175,7 @@ def medicineCategory():
                 continue
         result = query("SELECT * FROM medicine_category WHERE CATEGORY_ID = %s" + " OR CATEGORY_ID = %s" * (len(s) - 1),
                        True, False, True, *tuple(s))
-        if result:
-            return result
-        else:
-            return ""
+        return result if result else ""
 
     return ""
 
@@ -193,12 +184,8 @@ def medicineCategory():
 def medicine():
     iid = request.form.getlist('id')
     result = query("SELECT * FROM medicine WHERE CATEGORY_ID = %s", True, False, True, iid)
-    if result:
-        return result
-    else:
-        return ""
+    return result if result else ""
 
-    return ""
 
 
 @app.route('/search_disease', methods=['POST'])
@@ -228,10 +215,7 @@ def disease():
                 continue
         result = query("SELECT * FROM disease WHERE DISEASE_ID = %s" + " OR DISEASE_ID = %s" * (len(s) - 1), True,
                        False, True, *tuple(s))
-        if result:
-            return result
-        else:
-            return ""
+        return result if result else ""
     return ""
 
 
