@@ -16,7 +16,7 @@
 
 		
 
-				socket.on('back', function(msg){
+				socket.on('received', function(msg){
 					console.log(msg);
 					console.log(typeof msg);
 					$('#messages').append('<li>' +'>>Other :'+ msg.message + '</li>');
@@ -26,7 +26,7 @@
 
 				$('#sendButton').on('click', function(){
 					$('#messages').append('>> '+$('#myMessage').val()+'<br>');
-					socket.emit('message', {message : $('#myMessage').val(), room_id: {{pet_id}}, type : 'text'});
+					socket.emit('message', {message : $('#myMessage').val(), room_id: {{pet_id}}, type : 'text', sender : 'hospt'});
 					$('#myMessage').val('');
 				});
 			});

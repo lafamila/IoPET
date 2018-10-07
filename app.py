@@ -46,7 +46,7 @@ def on_leave(data):
 def message(data):
     print("messaged")
     print(data)
-    emit('back', data, room=data["room_id"], broadcast=True)
+    emit('received', data, room=data["room_id"], broadcast=True)
 
 
 @app.route('/login', methods=['POST'])
