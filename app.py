@@ -53,7 +53,7 @@ def message(data):
     print(data)
     q = "INSERT INTO `chat`(`ROOM_ID`, `CHAT_SEND`, `CHAT_TYPE`, `CHAT_MESSAGE`, `CHAT_DATETIME`) VALUES (%s, %s, %s, %s, now())"
     room_id = data["room_id"]
-    sender = 0 if data["sender"] == 'hospt' else 0
+    sender = 0 if data["sender"] == 'hospt' else 1
     text = 0 if data["type"] == 'text' else 1
     query(q, False, False, False, room_id, sender, text, data["message"])
     emit('received', data, room=room_id, broadcast=True)
@@ -61,7 +61,7 @@ def message(data):
 @app.route('/chatList', methods=['POST'])
 def getChat():
     room_id = request.form.get('room_id')
-    q = "SELECT * FROM `chat` WHERE `ROOM_ID` = %s"
+    q = "SELECT * FROM `chat` WHERE `ROOM_ID` = %s ORDER BY `CHAT_DATETIME`"
     result = query(q, True, False, True, room_id)
     if result:
         return result, 200

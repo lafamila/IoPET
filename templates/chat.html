@@ -9,6 +9,26 @@
 	<body>
 		<script>
 			$(document).ready(function(){
+
+				$.ajax({
+                    type: "POST",
+                    url: "/chatList",
+                    dataType: 'json',
+                    data: { room_id : {{room_id}} }, // stringify
+                    success: function(data){
+                        for(var i=0;i<data.length;i++){
+                            //중복검사
+                            if(data.CHAT_SEND == 1){
+                            	$('#messages').append('<li>' +'>>'+ data.CHAT_MESSAGE + '</li>');
+                            }
+                            else{
+	                            $('#messages').append('>> '+ data.CHAT_MESSAGE +'<br>');
+                            }
+                        }
+                    }
+                });
+
+
 				var socket = io.connect(window.location.origin);
 				socket.on('connect', function() {
 					socket.emit('join', {room_id: {{room_id}}});
