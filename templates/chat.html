@@ -18,11 +18,11 @@
                     success: function(data){
                         for(var i=0;i<data.length;i++){
                             //중복검사
-                            if(data.CHAT_SEND == 1){
-                            	$('#messages').append('<li>' +'>>'+ data.CHAT_MESSAGE + '</li>');
+                            if(data[i].CHAT_SEND == 1){
+                            	$('#messages').append('<li>' +'>>'+ data[i].CHAT_MESSAGE + '</li>');
                             }
                             else{
-	                            $('#messages').append('>> '+ data.CHAT_MESSAGE +'<br>');
+	                            $('#messages').append('>> '+ data[i].CHAT_MESSAGE +'<br>');
                             }
                         }
                     }
