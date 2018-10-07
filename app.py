@@ -34,7 +34,8 @@ def on_leave(data):
 
 @socket.on("message")
 def message(msg):
-    req = json.loads(msg)
+    req = msg
+    print(req)
     send(req, broadcast=True, room=req["room_id"])
 
 @app.route('/login', methods=['POST'])
