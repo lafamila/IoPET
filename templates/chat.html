@@ -26,7 +26,7 @@
 
 				$('#sendButton').on('click', function(){
 					$('#messages').append('>> '+$('#myMessage').val()+'<br>');
-					socket.emit('message', {message : $('#myMessage').val(), room_id: '{{pet_id}}'});
+					socket.emit('message', {message : $('#myMessage').val(), room_id: {{pet_id}}, type : 'text'});
 					$('#myMessage').val('');
 				});
 			});
