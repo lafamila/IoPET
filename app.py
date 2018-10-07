@@ -6,7 +6,16 @@ import os
 import copy
 app = Flask(__name__)
 socket = SocketIO(app)
+@app.route('/petLogin', methods=['POST'])
+def petLogin():
+    pet_id = request.form.get('pet_id');
+    q = "SELECT ROOM_ID FROM `pet` join `chat_room` on pet.PET_ID = chat_room.PET_ID and pet.HOSPITAL_ID = chat_room.HOSPITAL_ID WHERE pet.PET_ID = %s";
+    result = query(q, True, True, False, pet_id)
 
+    if result:
+        return result["ROOM_ID"], 200
+
+    return "", 404
 @app.route('/chat', methods=['GET'])
 def chat():
     
@@ -53,7 +62,7 @@ def personal():
     pet_id = request.form.get('pet_id');
     q = "SELECT * FROM `pet` WHERE `PET_ID` = %s";
 
-    return query(q, True, True, True, pet_id);
+    return query(q, True, True, True, pet_id)
 
 @app.route('/allPerson', methods=['POST'])
 def allPerson():
@@ -109,7 +118,7 @@ def insertPet():
         vs.append(request.form.get(k))
     ks = ",".join(ks)
     q = "INSERT INTO `pet`({}) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(ks)
-    pet_id = query(q, False, False, False, vs[0], vs[1], vs[2], vs[3], vs[4], vs[5], vs[6], vs[7], vs[8], vs[9])
+    pet_id = query(q, False, False, False, *tuple(vs))
 
     q = "INSERT INTO `chat_room`(`HOSPITAL_ID`, `PET_ID`) VALUES (%s, %s)"
     chat_room = query(q, False, False, False, vs[9], pet_id)
@@ -216,5 +225,5 @@ def person():
 if __name__ == "__main__":
     app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
     #app.run(host="0.0.0.0", port=5000)
-    # socket.run(app, port=5000, host='0.0.0.0')
-    socket.run(app)
+    socket.run(app, port=5000, host='0.0.0.0')
+    # socket.run(app)
