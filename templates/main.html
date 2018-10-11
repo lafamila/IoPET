@@ -8,43 +8,372 @@
 
     <body>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="{{url_for('static', filename='transform.js') }}"></script>
         <script>
-
-            $(document).on('click','.menu>li',function(){
-                if($(this).attr('class') != 'chat'){
-                    $( ".act" ).removeClass('act');
-                    $(this).addClass('act');
-                    $('#frame').attr('src', '/'+$(this).attr('id')+'?pet={{pet_id}}');
-                    $('#frame').attr('class', 'iframe-'+$(this).attr('id'));
-                }
+            var view = "#diag";
+            $(document).on('click','.nav-menu',function(){
+                $( ".act" ).removeClass('act');
+                $(this).addClass('act');
+                view = "#" + $(this).attr('data-item');
+                $(".vs-wrapper").hide();
+                $(view).show();
             });
             $(document).ready(function() {
+                $(".vs-wrapper").hide();
+                $(view).show();
+
+                $.ajax({
+                    url : '/load_personal',
+                    success : function(data){
+//                        console.log(JSON.stringify(data));
+                        for(key in transform(data)){
+//                            console.log('#'+key.toLowerCase());
+//                            console.log(data[key]);
+                            $('#'+key.toLowerCase()).html(data[key]);
+                        }
+                        $.ajax({
+                           url : '/load_diagnosis',
+                            success : function(data){
+                                diagnosises = data;
+                                for(var i=0;i<data.length;i++){
+                                    var html = "<div class='cell content-prev' data-item='"+i+"'>"+data[i].DIAGN_DATE.split(" ")[0]+"</div>";
+                                    $('#cell-prev').append(html);
+
+                                }
+                            },
+                            type : 'post',
+                            dataType: 'json',
+                            data : {pet_id : "{{pet_id}}", hospt_id : "{{hospt_id}}"}
+                        });
+
+                    },
+                    fail : function(){
+                        alert("asdfasdfasdf");
+                    },
+                    type : 'post',
+                    dataType: 'json',
+                    data : {pet_id : "{{pet_id}}"}
+                });
+
+
+                $("#diag_search").on('keyup', function(e) {
+
+                    let word = $(this).val();
+                    console.log($(".search-type").attr("data-item"));
+                    if (e.keyCode == 13){
+
+
+                        if($(".search-type").attr("data-item") == 0){
+                            if( $('.searched-list').length > 0){
+                                let result = $('.searched-list').first().html();
+                                let iid = $('.searched-list').first().attr('data-item');
+                                //중복검사
+                                appendDisease(result, iid);
+                                $(this).val("");
+                                $('.search-list').empty();
+
+                            }
+                        }
+                        else if($(".search-type").attr("data-item") == 1){
+                            $("#searched2").append("<div class='searched-result-list-item2' data-select='0'>"+word+"</span>");
+                            $(this).val("");
+                            searchDisease();
+                        }
+
+                    }
+                    else{
+                        if($(".search-type").attr("data-item") == 0){
+                            if(word.length > 0){
+                                $.ajax({
+                                   url : '/search_disease',
+                                    success : function(data){
+                                        $('.search-list').empty();
+                                        for(var i=0;i<data.length;i++){
+                                            var html = "<div class='searched-list' data-item='"+data[i].DISEASE_ID+"'>"+data[i].DISEASE_NAME+"</div>";
+
+                                            $('.search-list').append(html);
+                                        }
+                                    },
+                                    type : 'post',
+                                    dataType: 'json',
+                                    data : {search : word}
+                                });
+                            }
+                            else{
+                                $('.search-list').empty();
+                            }
+
+                        }
+
+                    }
+                });
+
+
+
                 $(".chat").click(function(){
                     window.open('/chat?pet={{pet_id}}', "popupWindow", "width=600,height=600,scrollbars=no,resizable=no");
                 });
             });
+            $(document).on('click','.content-prev',function(){
+                $( ".content-prev" ).removeClass('selected');
+                $(this).addClass('selected');
+                $('#cell-prev-c').html(diagnosises[$(this).attr("data-item")].DIAGN_OPINION);
+            });
+            $(document).on('click','.search-button',function(){
+                $(".search-button").removeClass('search-type');
+                $(this).addClass('search-type');
+            });
+            $(document).on('click','.searched-list',function(){
 
+                var result = $(this).html();
+                let iid = $(this).attr('data-item');
+                //중복검사
+                appendDisease(result, iid);
+
+                $('#diag_search').val("");
+                $('.search-list').empty();
+            });
+            $(document).on('mouseover','.searched-list',function(){
+                var currentColor = $(this).css('background-color');
+                $('.searched-list').css('background-color', 'rgba(255, 255, 255, 0.9)');
+                $(this).css('background-color', 'rgba(92, 116, 183, 0.9)');
+                console.log(currentColor);
+                //var lastComma = currentColor.lastIndexOf(')');
+                //var newColor = currentColor.slice(0, lastComma - 1) + ", "+ o + ")";-->
+                //$(e).css('background-color', newColor);
+            });
+            $(document).on('mouseout','.search-list',function(){
+                $('.searched-list').css('background-color', 'rgba(255, 255, 255, 0.9)');
+            });
+            $(document).on('click','.searched-result-list-item1',function(){
+                if($(this).attr("data-select") == 1){
+                    $(this).attr("data-select", 0);
+                    $(this).removeClass('tagSelected');
+                }
+                else{
+                    $(this).attr("data-select", 1);
+                    $(this).addClass('tagSelected');
+                }
+                searchMedicine();
+            });
+            $(document).on('click','.searched-result-list-item2',function(){
+                if($(this).attr("data-select") == 1){
+                    $(this).attr("data-select", 0);
+                    $(this).removeClass('tagSelected');
+                }
+                else{
+                    $(this).attr("data-select", 1);
+                    $(this).addClass('tagSelected');
+                }
+                searchMedicine();
+            });
         </script>
-        <div class="navBar">
-            <div class="navHeader">
-                <div class="hosptName">{{hospt_name}}</div>
-                <div class="menuHospt">병원관리</div>
+        <div class="header-container">
+            <div class="header">
+                <div class="rep-name">대표운영자(<font color="#5C74B7">rlqls505</font>)님</div>
+                <div></div>
+                <div class="logout">로그아웃</div>
+                <div></div>
+                <div class="header-menu">메뉴얼</div>
+                <div class="header-menu">1:1문의</div>
+                <div class="header-menu">고객센터</div>
             </div>
-            <div class="navMenu">
-                <!--<img src="{{ url_for('static', filename='img/logo1.png') }}">-->
-                <ul class="menu">
-                    <li id="diag" class="act">기본진료</li>
-                    <li>정밀검사</li>
-                    <li>마약관리</li>
-                    <li>수가/메모</li>
-                    <li id="person">보호자관리</li>
-                    <li class="chat"><img src="{{ url_for('static', filename='img/chatting_btn.png') }}" width="90px" height="90x"></li>
-                </ul>
+
+        </div>
+        <div class="nav-container">
+            <div class="nav">
+                <div class="logo"><img src="{{url_for('static', filename='img/logo.png') }}"></div>
+                <div class="nav-menu act" data-item="diag">
+                    <div class="nav-menu-logo">
+                        <img src="{{url_for('static', filename='img/man.png') }}">
+                    </div>
+                    <div class="nav-menu-text">기본진료</div>
+                </div>
+                <div class="nav-menu" data-item="more">
+                    <div class="nav-menu-logo">
+                        <img src="{{url_for('static', filename='img/more.png') }}">
+                    </div>
+                    <div class="nav-menu-text">정밀검사</div>
+                </div>
+                <div class="nav-menu" data-item="medicines">
+                    <div class="nav-menu-logo">
+                        <img src="{{url_for('static', filename='img/medicine.png') }}">
+                    </div>
+                    <div class="nav-menu-text">마약관리</div>
+                </div>
+                <div class="nav-menu" data-item="memo">
+                    <div class="nav-menu-logo">
+                        <img src="{{url_for('static', filename='img/memo.png') }}">
+                    </div>
+                    <div class="nav-menu-text">수가/메모</div>
+                </div>
+                <div class="nav-menu" data-item="person">
+                    <div class="nav-menu-logo">
+                        <img src="{{url_for('static', filename='img/man.png') }}">
+                    </div>
+                    <div class="nav-menu-text">보호자관리</div>
+                </div>
+                <div class="nav-menu" data-item="chat">
+                    <div class="nav-menu-logo">
+                        <img src="{{url_for('static', filename='img/chatt.png') }}">
+                    </div>
+                    <div class="nav-menu-text">채팅하기</div>
+                </div>
+                <div></div>
+            </div>
+
+        </div>
+        <div class="body-container">
+            <div class="body">
+                <div class="vs-wrapper" id="diag">
+				    <div class="vs-content">
+                        <div class="content-diag">
+                            <div class="table-big">
+                                <div class="title">개인정보</div>
+                                <div class="personal">
+                                    <div class="name">이름</div>
+                                    <div class="cell" id="pet_name"></div>
+                                    <div class="name">보호자</div>
+                                    <div class="cell" id="pet_person"></div>
+                                    <div class="name">품종</div>
+                                    <div class="cell" id="pet_spec"></div>
+                                    <div class="name">입원여부</div>
+                                    <div class="cell" id="pet_adms"></div>
+                                    <div class="name">나이(Y)</div>
+                                    <div class="cell" id="pet_age"></div>
+                                    <div class="name">체중(kg)</div>
+                                    <div class="cell" id="pet_weight"></div>
+                                    <div class="name">성별</div>
+                                    <div class="cell" id="pet_sex"></div>
+                                    <div class="name"></div>
+                                    <div class="cell"></div>
+                                    <div class="name">연락처</div>
+                                    <div class="cell" id="pet_contact"></div>
+                                    <div class="name"></div>
+                                    <div class="cell"></div>
+                                    <div class="name cell-2">특이사항</div>
+                                    <div class="cell cell-2" id="pet_profile"></div>
+                                </div>
+
+                            </div>
+                            <div class="table-big">
+                                <div class="title">이전진료</div>
+                                <div class="prev">
+                                    <div id="cell-prev" class="content-cell-prev">
+
+                                    </div>
+                                    <div id="cell-prev-c" class="content-cell-prev-c"></div>
+                                </div>
+                            </div>
+                            <div class="table-big">
+                                <div class="title">현재진료</div>
+                                <textarea rows="4" style="resize:none;" class="diagnosis"></textarea>
+                            </div>
+                        </div>
+                        <div class="content-search">
+                            <div style="height:100%; display:inline-flex;align-items: center;"><hr width="100%" color="#EAEAEA"></div>
+                            <div class="search">
+                                <div class="search-button" data-item="0">질 &nbsp; 병</div>
+                                <div class="search-button search-type" data-item="1">증 &nbsp; 상</div>
+                                <div class="search-button" data-item="2">약 &nbsp; 품</div>
+                                <div></div>
+                                <form class="search-form"  onsubmit="return false;">
+                                    <input type="text" id="diag_search" autocomplete="off"/>
+                                    <div class="search-list">
+                                    </div>
+
+                                </form>
+                                <div></div>
+                            </div>
+                            <div></div>
+                        </div>
+                        <div class="content-insert">
+                            <div class="insert">
+                                <div class="medicine-container">
+                                    <div class="search-result">
+                                        <div class="table">
+                                            <div class="title">질병명</div>
+                                            <div class="searched1" id="searched1"></div>
+                                        </div>
+                                        <div class="table">
+                                            <div class="title">증상명</div>
+                                            <div class="searched2" id="searched2"></div>
+                                        </div>
+                                    </div>
+                                    <div class="medicine-result">
+                                        <div class="table">
+                                            <div class="title">약품명</div>
+                                            <div class="medicine-category" id="medicine-category"></div>
+                                        </div>
+                                        <div class="table">
+                                            <div class="title">약품상세info</div>
+                                            <div class="medicine-category" id="medicine"></div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="stock-container">
+                                    <div class="table">
+                                        <div class="title">자가관리</div>
+                                        <div class="self-result"></div>
+                                    </div>
+                                    <div class="stock">
+                                        <div class="title1">처방관리</div>
+                                        <div class="title2">수가입력</div>
+                                        <div class="name">품명</div>
+                                        <div class="name">kg양</div>
+                                        <div class="name">일수</div>
+                                        <div class="name">일투수</div>
+                                        <div class="name">일투량</div>
+                                        <div class="name">실수량</div>
+                                        <div class="name">수량</div>
+                                        <div class="name">단가</div>
+                                        <div class="name">금액</div>
+                                        <div class="cell-container"></div>
+                                        <div class="cell-container"></div>
+                                        <div class="cell-container"></div>
+                                        <div class="cell-container"></div>
+                                        <div class="cell-container"></div>
+                                        <div class="cell-container"></div>
+                                        <div class="cell-container"></div>
+                                        <div class="cell-container"></div>
+                                        <div class="cell-container"></div>
+                                        <div class="title3">합 &nbsp; &nbsp; &nbsp;계</div>
+                                        <div class="stock-count">4</div>
+                                        <div class="stock-price">256,000</div>
+                                    </div>
+                                </div>
+                                <div></div>
+                            </div>
+                            <div class="final">
+                                <textarea rows="4" style="resize:none;" class="opinion">나트륨이 과다한 음식은 잦은 소변과 심혈관계 질환을 유발할 수 있으니 피해주세요. 한 주에 30분 이상의 운동을 추천합니다. 정기적인 관리를 하지 않으면 쿠싱과 저혈당 쇼크등의 합병증이 유발될 수 있으니 유의해주세요.</textarea>
+                                <div class="submits">
+                                    <div class="check">검사하기</div>
+                                    <div class="submit">처방하기</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="vs-wrapper" id="more">
+				    <div class="vs-content">hello2</div>
+                </div>
+                <div class="vs-wrapper" id="medicines">
+				    <div class="vs-content">hello3</div>
+                </div>
+                <div class="vs-wrapper" id="memo">
+				    <div class="vs-content">hello4</div>
+                </div>
+                <div class="vs-wrapper" id="person">
+				    <div class="vs-content">hello5</div>
+                </div>
+                <div class="vs-wrapper" id="chat">
+				    <div class="vs-content">hello6</div>
+                </div>
+
             </div>
         </div>
-        <div class="frame">
-
-    		<iframe id="frame" width="100%" height="100%" src="/diag?pet={{pet_id}}" frameborder="0" scrolling="no"></iframe>
+        <div>
 
         </div>
     </body>

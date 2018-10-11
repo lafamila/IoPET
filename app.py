@@ -159,13 +159,13 @@ def insertPet():
     return "success"
 
 
-@app.route('/load_medicine_category', methods=['POST'])
+@app.route('/load_medicine', methods=['POST'])
 def medicineCategory():
     s = set()
     words1 = request.form.getlist('word1[]')
     if len(words1) > 0:
         for word in words1:
-            result = query("SELECT * FROM disease_medicine_category WHERE `DISEASE_ID` = %s", True, False, False, word)
+            result = query("SELECT * FROM disease_medicine WHERE `DISEASE_ID` = %s", True, False, False, word)
             if result:
                 if len(s) > 0:
                     s = s.union({r["CATEGORY_ID"] for r in result})
@@ -173,7 +173,7 @@ def medicineCategory():
                     s = {r["CATEGORY_ID"] for r in result}
             else:
                 continue
-        result = query("SELECT * FROM medicine_category WHERE CATEGORY_ID = %s" + " OR CATEGORY_ID = %s" * (len(s) - 1),
+        result = query("SELECT * FROM medicine WHERE MEDI_ID = %s" + " OR MEDI_ID = %s" * (len(s) - 1),
                        True, False, True, *tuple(s))
         return result if result else ""
 
@@ -258,5 +258,5 @@ def person():
 if __name__ == "__main__":
     app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
     # app.run(host="0.0.0.0", port=5000)
-    socket.run(app, port=5000, host='0.0.0.0')
-    # socket.run(app)
+    # socket.run(app, port=5000, host='0.0.0.0')
+    socket.run(app, debug=True)

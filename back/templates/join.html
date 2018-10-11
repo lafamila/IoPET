@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+    <input type="text" id="name" placeholder="PET_NAME">
+    <input type="number" id="age" placeholder="PET_AGE" step="1">
+    <input type="text" id="spec" placeholder="PET_KIND">
+    <input type="number" id="weight" placeholder="PET_WEIGHT">
+    <select id="sex">
+        <option value="4" disabled selected>PET_SEX</option>
+        <option value="0">Female</option>
+        <option value="1">Male</option>
+        <option value="2">Castrated Female</option>
+        <option value="3">Castrated Male</option>
+    </select>
+    <input type="text" id="profile" placeholder="PET_특이사항">
+    <input type="text" id="person" placeholder="PET_보호자이름">
+    <input type="tel" id="contact" placeholder="PET_보호자 연락처">
+    <input type="button" id="submit" value="등록">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        $("#submit").click(function(){
+
+                $.ajax({
+                    url : '/insert_pet',
+                    success : function(data){
+
+                        if(data == "success")
+                            location.href = "/main";
+                        else
+                            alert(data);
+                    },
+                    fail : function(){
+                        alert("asdfasdfasdf");
+                    },
+                    type : 'post',
+                    dataType: 'text',
+                    data : {"PET_NAME":$("#name").val(),
+                            "PET_AGE":$("#age").val(),
+                            "PET_SPEC":$("#spec").val(),
+                            "PET_WEIGHT":$("#weight").val(),
+                            "PET_SEX":$("#sex").val(),
+                            "PET_ADMS":0,
+                            "PET_PROFILE":$("#profile").val(),
+                            "PET_PERSON":$("#person").val(),
+                            "PET_CONTACT":$("#contact").val(),
+                            "HOSPITAL_ID":{{hospt_id}}
+                            }
+                });
+
+
+        });
+
+
+    </script>
+
+</body>
+</html>

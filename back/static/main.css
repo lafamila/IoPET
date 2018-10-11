@@ -1,0 +1,133 @@
+@import url('https://fonts.googleapis.com/css?family=Gothic+A1');
+html, body{
+    margin:0px;
+    height:100%;
+    font-family: 'Gothic A1', sans-serif;
+}
+body{
+    box-sizing:border-box;
+}
+textarea, select, input, button { outline: none; }
+/* width */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: transparent; 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #F3F6FF; 
+    border:#7B7B7B 0.7px solid;
+    border-right:none;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #F3F6FF; 
+}
+
+
+
+/**  HEADER  **/
+.navBar{
+    height:17.87vh;
+
+    background:#ffffff;
+}
+.navHeader{
+    display:inline-flex;
+    justify-content: flex-end;
+    
+    width:100%;
+    height:4.63vh;
+
+    background:#5C74B7;
+}
+.hosptName{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    
+    width: 180px;
+    height: 2.315vh; 
+
+    margin-top:1.2vh;
+    
+    background:#ffffff;
+    font-size:12px;
+    
+    border-radius: 12px;
+}
+.menuHospt{
+    display:inline-flex;
+    
+    width:auto;
+
+    margin-top:18px;
+    margin-left:25px;
+    margin-right:66px;
+
+    color:#ffffff;
+    font-size:12px;
+}
+.navMenu{
+    display:inline-flex;
+    justify-content: flex-end;
+
+    width:100%;
+    height:131px;
+}
+
+.navMenu > ul {
+    display:inline-flex;
+
+    list-style:none;
+    
+    margin:0;
+    padding:0;
+}
+
+.navMenu > ul > li {
+    float: left;
+    
+    margin-top:54px;
+    margin-left:67px;
+    padding: 0 0 0 0;
+    
+    font-size:18px;
+    color:#000000;
+
+    border : 0;
+}
+.chat{
+    margin-left:44px !important;
+    margin-right:75px !important;
+    margin-top:21px !important;
+}
+.act{
+    color:#5C74B7 !important;
+    font-weight: bold;
+
+}
+
+.frame{
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    height:75.92vh;
+    background:#F0F4FF;
+    width:100%;
+}
+
+.iframe-diag{
+    width:177.78vh;
+}
+.iframe-person{
+    width:164.81vh;
+    height:68.52vh;
+    box-shadow:0px 0px 2px rgba(0, 0, 0, 0.12);
+}

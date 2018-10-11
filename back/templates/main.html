@@ -1,0 +1,51 @@
+<!DOCTYPE HTML>
+<html>
+
+    <head>
+        <meta charset="utf-8">
+        <link href="{{url_for('static', filename='main.css') }}" rel="stylesheet">
+    </head>
+
+    <body>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script>
+
+            $(document).on('click','.menu>li',function(){
+                if($(this).attr('class') != 'chat'){
+                    $( ".act" ).removeClass('act');
+                    $(this).addClass('act');
+                    $('#frame').attr('src', '/'+$(this).attr('id')+'?pet={{pet_id}}');
+                    $('#frame').attr('class', 'iframe-'+$(this).attr('id'));
+                }
+            });
+            $(document).ready(function() {
+                $(".chat").click(function(){
+                    window.open('/chat?pet={{pet_id}}', "popupWindow", "width=600,height=600,scrollbars=no,resizable=no");
+                });
+            });
+
+        </script>
+        <div class="navBar">
+            <div class="navHeader">
+                <div class="hosptName">{{hospt_name}}</div>
+                <div class="menuHospt">병원관리</div>
+            </div>
+            <div class="navMenu">
+                <!--<img src="{{ url_for('static', filename='img/logo1.png') }}">-->
+                <ul class="menu">
+                    <li id="diag" class="act">기본진료</li>
+                    <li>정밀검사</li>
+                    <li>마약관리</li>
+                    <li>수가/메모</li>
+                    <li id="person">보호자관리</li>
+                    <li class="chat"><img src="{{ url_for('static', filename='img/chatting_btn.png') }}" width="90px" height="90x"></li>
+                </ul>
+            </div>
+        </div>
+        <div class="frame">
+
+    		<iframe id="frame" width="100%" height="100%" src="/diag?pet={{pet_id}}" frameborder="0" scrolling="no"></iframe>
+
+        </div>
+    </body>
+</html>
