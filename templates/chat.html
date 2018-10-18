@@ -230,6 +230,10 @@
 
 				$('#sendButton').on('click', function(){
 					if($('.selected').length > 0){
+						var $div = $("<div/>").html($('#myMessage').val());
+						$div.addClass("send");
+						$(".chat-message").append($div);
+
 						socket.emit('message', {message : $('#myMessage').val(), room_id: $('.selected').data('room'), type : 'text', sender : 'hospt'});
 						$('#myMessage').val('');
 

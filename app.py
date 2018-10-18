@@ -76,8 +76,6 @@ def on_join(data):
         True, True, False, receive, room)
     if last:
         query("UPDATE `chat` SET `CHAT_READ` = 0 WHERE `ROOM_ID` = %s AND `CHAT_DATETIME` <= %s", False, False, False, room, last["CHAT_DATETIME"])
-    #data["sender"] 이용해서 pet이면 0가 보냈던 가장 최근 메세지 시간 기준 이전 모든 메세지 읽음
-    #data["sender"] 이용해서 hospt이면 1이 보냈던 가장 최근 메세지 시간 기준 이전 모든 메세지 읽음
     join_room(room)
 
 

@@ -271,3 +271,11 @@ textarea, select, input, button { outline: none; }
     background: #FF0000;
     border: none;
 }
+.send{
+    float:right;
+    background:#F3F6FF;
+    color:#FFFFFF;
+}
+.receive{
+    float:left;
+}
