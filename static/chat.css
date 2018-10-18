@@ -273,9 +273,16 @@ textarea, select, input, button { outline: none; }
 }
 .send{
     float:right;
-    background:#F3F6FF;
+    background: #5C74B7;
     color:#FFFFFF;
+    height:5vh;
+    font-size:2vh;
+    width:100%;
+    display:block;
 }
 .receive{
     float:left;
+    height:5vh;
+    width:100%;
+    font-size:2vh;
 }
