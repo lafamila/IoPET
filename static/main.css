@@ -7,6 +7,33 @@ html, body{
     font-family: 'Gothic A1', sans-serif;
 
 }
+
+.modal {
+    display:    none;
+    position:   fixed;
+    z-index:    1000;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 )
+                url('http://i.stack.imgur.com/FhHRx.gif')
+                50% 50%
+                no-repeat;
+}
+
+/* When the body has the loading class, we turn
+   the scrollbar off with overflow:hidden */
+body.loading .modal {
+    overflow: hidden;
+}
+
+/* Anytime the body has the loading class, our
+   modal element will be visible */
+body.loading .modal {
+    display: block;
+}
+
 body{
     display: grid;
     grid-template-rows: 38fr 110fr 864fr 0fr;
@@ -177,10 +204,23 @@ textarea, select, input, button { outline: none; }
 .cell-2{
     height:5.56vh;
 }
+.cell-long{
+    height:2.78vh;
+    display:grid;
+    grid-template-columns: 280fr 105fr 90fr 90fr 90fr 115fr 90fr 100fr 179fr;
+
+}
 .name{
     background:#F9F9F9;
 }
-
+.cell-container{
+    overflow-y: scroll;
+    height:11.106vh;
+    grid-column-start: 1;
+    grid-column-end: 10;
+    grid-row-start: 3;
+    grid-row-end: 4;
+}
 /*diag*/
 .content-diag{
     display:grid;
@@ -273,7 +313,7 @@ textarea, select, input, button { outline: none; }
     color:#000000;
 
 }
-.searched-result-list-item1, .searched-result-list-item2{
+.searched-result-list-item1, .searched-result-list-item2, .medicine-categorys{
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -318,6 +358,16 @@ textarea, select, input, button { outline: none; }
 }
 .searched1, .searched2, .medicine-category, .self-result{
     border:var(--main-bg-color) 0.5px solid;
+}
+
+#medicine{
+    overflow-y: scroll;
+    padding: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    word-wrap: break-word;
+    height: Calc(16.66vh - 20px);
+    font-size: 1.297vh;
 }
 
 .medicine-result{

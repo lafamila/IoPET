@@ -10,18 +10,49 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script src="{{url_for('static', filename='transform.js') }}"></script>
         <script>
+            var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+            var eventer = window[eventMethod];
+            var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+            console.log(eventMethod);
+            console.log(messageEvent);
+            // Listen to message from child window
+
+            $body = $("body");
+
             var view = "#diag";
+            var before = "#diag";
             $(document).on('click','.nav-menu',function(){
+                before = $( ".act" ).attr('data-item');
                 $( ".act" ).removeClass('act');
+
                 $(this).addClass('act');
                 view = "#" + $(this).attr('data-item');
-                $(".vs-wrapper").hide();
-                $(view).show();
+                if(view != "#chat"){
+                    $(".vs-wrapper").hide();
+                    $(view).show();
+                }
+                else{
+                    var chatWindow = window.open("/chat?pet={{pet_id}}", "popupWindow", "width=1000,height=630,scrollbars=no");
+
+/*
+                    if (typeof chatWindow.attachEvent != "undefined") {
+                        chatWindow.attachEvent("onunload", doStuffOnUnload);
+                    } else if (typeof chatWindow.addEventListener != "undefined") {
+                        chatWindow.addEventListener("unload", doStuffOnUnload, false);
+                    }*/
+                    //새창띄우기, 꺼지면 다시 before act 시키기기
+               }
             });
             $(document).ready(function() {
+                eventer(messageEvent,function(e) {
+                  console.log('parent received message!:  ',e.data);
+                },false);
+
+
                 $(".vs-wrapper").hide();
                 $(view).show();
 
+                $body.addClass("loading");
                 $.ajax({
                     url : '/load_personal',
                     success : function(data){
@@ -41,6 +72,9 @@
 
                                 }
                             },
+                            complete : function(){
+                                $body.removeClass("loading");
+                            },
                             type : 'post',
                             dataType: 'json',
                             data : {pet_id : "{{pet_id}}", hospt_id : "{{hospt_id}}"}
@@ -59,7 +93,7 @@
                 $("#diag_search").on('keyup', function(e) {
 
                     let word = $(this).val();
-                    console.log($(".search-type").attr("data-item"));
+
                     if (e.keyCode == 13){
 
 
@@ -67,8 +101,9 @@
                             if( $('.searched-list').length > 0){
                                 let result = $('.searched-list').first().html();
                                 let iid = $('.searched-list').first().attr('data-item');
+                                let recommend = $('.searched-list').first().attr('data-recommend');
                                 //중복검사
-                                appendDisease(result, iid);
+                                appendDisease(result, iid, recommend);
                                 $(this).val("");
                                 $('.search-list').empty();
 
@@ -78,6 +113,16 @@
                             $("#searched2").append("<div class='searched-result-list-item2' data-select='0'>"+word+"</span>");
                             $(this).val("");
                             searchDisease();
+                        }
+                        else{
+                            if( $('.searched-list').length > 0){
+                                let result = $('.searched-list').first().html();
+                                let iid = $('.searched-list').first().attr('data-item');
+                                appendMedicine(result, iid);
+                                $(this).val("");
+                                $('.search-list').empty();
+
+                            }
                         }
 
                     }
@@ -89,7 +134,31 @@
                                     success : function(data){
                                         $('.search-list').empty();
                                         for(var i=0;i<data.length;i++){
-                                            var html = "<div class='searched-list' data-item='"+data[i].DISEASE_ID+"'>"+data[i].DISEASE_NAME+"</div>";
+                                            var $div = $("<div/>").addClass('searched-list')
+                                                                   .html(data[i].DISEASE_NAME)
+                                                                   .attr('data-item', data[i].DISEASE_ID)
+                                                                   .attr('data-recommend', data[i].DISEASE_RECOMMEND);
+                                            $('.search-list').append($div);
+                                        }
+                                    },
+                                    type : 'post',
+                                    dataType: 'json',
+                                    data : {search : word}
+                                });
+                            }
+                            else{
+                                $('.search-list').empty();
+                            }
+
+                        }
+                        else if($(".search-type").attr("data-item") == 2){
+                            if(word.length > 0){
+                                $.ajax({
+                                   url : '/search_medicine',
+                                    success : function(data){
+                                        $('.search-list').empty();
+                                        for(var i=0;i<data.length;i++){
+                                            var html = "<div class='searched-list' data-item='"+data[i].MEDI_ID+"'>"+data[i].MEDI_NAME+"</div>";
 
                                             $('.search-list').append(html);
                                         }
@@ -117,7 +186,7 @@
             $(document).on('click','.content-prev',function(){
                 $( ".content-prev" ).removeClass('selected');
                 $(this).addClass('selected');
-                $('#cell-prev-c').html(diagnosises[$(this).attr("data-item")].DIAGN_OPINION);
+                $('#cell-prev-c').html(diagnosises[$(this).attr("data-item")].DIAGN_OPINION.replace(/\n/g,"<br/>"));
             });
             $(document).on('click','.search-button',function(){
                 $(".search-button").removeClass('search-type');
@@ -127,9 +196,14 @@
 
                 var result = $(this).html();
                 let iid = $(this).attr('data-item');
+                let recommend = $(this).attr('data-recommend');
                 //중복검사
-                appendDisease(result, iid);
-
+                if($(".search-type").attr("data-item") == 0){
+                    appendDisease(result, iid, recommend);
+                }
+                else if($(".search-type").attr("data-item") == 2){
+                    appendMedicine(result, iid);
+                }
                 $('#diag_search').val("");
                 $('.search-list').empty();
             });
@@ -137,7 +211,7 @@
                 var currentColor = $(this).css('background-color');
                 $('.searched-list').css('background-color', 'rgba(255, 255, 255, 0.9)');
                 $(this).css('background-color', 'rgba(92, 116, 183, 0.9)');
-                console.log(currentColor);
+
                 //var lastComma = currentColor.lastIndexOf(')');
                 //var newColor = currentColor.slice(0, lastComma - 1) + ", "+ o + ")";-->
                 //$(e).css('background-color', newColor);
@@ -145,27 +219,107 @@
             $(document).on('mouseout','.search-list',function(){
                 $('.searched-list').css('background-color', 'rgba(255, 255, 255, 0.9)');
             });
+            $(document).on('click','.medicine-categorys', function(){
+                if($(this).hasClass("tagSelected")){
+                    $(this).removeClass('tagSelected');
+                    $('#medicine').empty();
+                }
+                else{
+                    $('#medicine').empty();
+
+                    $('.medicine-categorys.tagSelected').removeClass('tagSelected');
+                    $(this).addClass('tagSelected');
+
+                    $('#medicine').append($('<strong/>').html($(this).html()))
+                                  .append($('<br/>'))
+                                  .append($(this).data('intro'))
+                                  .append($('<br/>'))
+                                  .append($('<br/>'))
+                                  .append($('<strong/>').html("용법 : "));
+                    if($(this).data('method') == 0){
+                        $('#medicine').append("PO(경구투여)");
+                    }
+                    $('#medicine').append($('<br/>'))
+                                  .append($('<br/>'))
+                                  .append($('<strong/>').html("부작용"))
+                                  .append($('<br/>'))
+                                  .append($(this).data('side'))
+                                  .append($('<br/>'))
+                                  .append($('<br/>'))
+                                  .append($('<strong/>').html("주의사항"))
+                                  .append($('<br/>'))
+                                  .append($(this).data('warn'))
+                                  .append($('<br/>'))
+                                  .append($('<br/>'));
+                }
+            });
             $(document).on('click','.searched-result-list-item1',function(){
                 if($(this).attr("data-select") == 1){
                     $(this).attr("data-select", 0);
                     $(this).removeClass('tagSelected');
+                    $("#medicine-category").empty();
+                    $("#medicine").empty();
                 }
                 else{
+                    $(".searched-result-list-item1.tagSelected").attr("data-select", 0);
+                    $(".searched-result-list-item1.tagSelected").removeClass('tagSelected');
                     $(this).attr("data-select", 1);
                     $(this).addClass('tagSelected');
                 }
                 searchMedicine();
             });
-            $(document).on('click','.searched-result-list-item2',function(){
-                if($(this).attr("data-select") == 1){
-                    $(this).attr("data-select", 0);
-                    $(this).removeClass('tagSelected');
+            $(document).on('dblclick','.medicine-categorys',function(){
+                alert($(this).data('id'));
+                var $div = $('<div/>');
+                var idArr1 = [];
+                var list1 = $(".medi-name-cell");
+                let idx = list1.length;
+                $.each(list1, function () {
+
+                    idArr1.push($(this).html());
+                 });
+                 if(!idArr1.includes($(this).html())){
+                $div.addClass("cell-long");
+                           $div.append($('<div/>').addClass("cell").addClass("medi-name-cell").attr('data-idx', idx+1).html($(this).html()))
+                           .append($('<div/>').addClass("cell").attr('data-idx', idx+1).html($(this).data('vol')+'mg/kg'))
+                           .append($('<div/>').addClass("cell").attr('data-idx', idx+1).html($(this).data('period')))
+                           .append($('<div/>').addClass("cell").attr('data-idx', idx+1).html($(this).data('doses')))
+                           .append($('<div/>').addClass("cell").attr('data-idx', idx+1).html($(this).data('vol') * $('#pet_weight').html().split('kg')[0] * $(this).data('doses') + 'mg'))
+                           .append($('<div/>').addClass("cell").attr('data-idx', idx+1).html($(this).data('vol') * $('#pet_weight').html().split('kg')[0] * $(this).data('doses') * $(this).data('period') + 'mg'))
+                           .append($('<div/>').addClass("cell").attr('data-idx', idx+1).html(2))
+                           .append($('<div/>').addClass("cell").attr('data-idx', idx+1).html(CommaFormatted($(this).data('price'))))
+                           .append($('<div/>').addClass("cell").addClass("medi-price-cell").attr('data-idx', idx+1).html(CommaFormatted($(this).data('price') * 2)));
+                $('.cell-container').append($div);
+                if($(".searched-result-list-item1.tagSelected").length > 0){
+                    $(".opinion").val($(".opinion").val() + $(".searched-result-list-item1.tagSelected").data('recommend'));
+                    var $disease = $("<input/>").attr('type', 'hidden').addClass('diag_names').val($(".searched-result-list-item1.tagSelected").html());
+
+                    $disease.appendTo($("#diag"));
                 }
-                else{
-                    $(this).attr("data-select", 1);
-                    $(this).addClass('tagSelected');
+                $(".stock-count").html(Number($(".stock-count").html())+1);
+                var price = 0;
+                $.each($(".medi-price-cell"), function () {
+                    price += Number($(this).html().replace("," , ""))
+
+                 });
+                 $(".stock-price").html(CommaFormatted(price));
                 }
-                searchMedicine();
+            });
+            $(document).on('click','.submit',function(){
+                var arr = [];
+                $.each($(".diag_names"), function () {
+                    arr.push($(this).val());
+                });
+                var name = arr.join(", ");
+                $.ajax({
+                    type: "POST",
+                    url: "/insert_diagn",
+                    dataType: 'json',
+                    data: { DIAGN_NAME: name, DIAGN_OPINION: $(".diagnosis").val()+"\n"+$(".opinion").val(), DIAGN_PRICE:$(".stock-price").html().replace(",",""), HOSPITAL_ID: {{hospt_id}}, PET_ID: {{pet_id}} }, // stringify
+                    success: function(data){
+                        location.reload();
+                    }
+                });
             });
         </script>
         <div class="header-container">
@@ -267,7 +421,7 @@
                             </div>
                             <div class="table-big">
                                 <div class="title">현재진료</div>
-                                <textarea rows="4" style="resize:none;" class="diagnosis"></textarea>
+                                <textarea rows="4" style="resize:none;" class="diagnosis" placeholder="진료내용을 메모해주세요"></textarea>
                             </div>
                         </div>
                         <div class="content-search">
@@ -330,23 +484,15 @@
                                         <div class="name">단가</div>
                                         <div class="name">금액</div>
                                         <div class="cell-container"></div>
-                                        <div class="cell-container"></div>
-                                        <div class="cell-container"></div>
-                                        <div class="cell-container"></div>
-                                        <div class="cell-container"></div>
-                                        <div class="cell-container"></div>
-                                        <div class="cell-container"></div>
-                                        <div class="cell-container"></div>
-                                        <div class="cell-container"></div>
                                         <div class="title3">합 &nbsp; &nbsp; &nbsp;계</div>
-                                        <div class="stock-count">4</div>
-                                        <div class="stock-price">256,000</div>
+                                        <div class="stock-count">0</div>
+                                        <div class="stock-price">0</div>
                                     </div>
                                 </div>
                                 <div></div>
                             </div>
                             <div class="final">
-                                <textarea rows="4" style="resize:none;" class="opinion">나트륨이 과다한 음식은 잦은 소변과 심혈관계 질환을 유발할 수 있으니 피해주세요. 한 주에 30분 이상의 운동을 추천합니다. 정기적인 관리를 하지 않으면 쿠싱과 저혈당 쇼크등의 합병증이 유발될 수 있으니 유의해주세요.</textarea>
+                                <textarea rows="4" style="resize:none;" class="opinion" placeholder="종합소견을 입력해주세요"></textarea>
                                 <div class="submits">
                                     <div class="check">검사하기</div>
                                     <div class="submit">처방하기</div>
@@ -376,5 +522,6 @@
         <div>
 
         </div>
+        <div class="modal"><!-- Place at bottom of page --></div>
     </body>
 </html>

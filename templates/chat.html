@@ -3,61 +3,320 @@
 	<head>
 		<meta charset="utf-8">
 		<title>Chat</title>
+        <link href="{{url_for('static', filename='chat.css') }}" rel="stylesheet">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 		<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
 	</head>
 	<body>
 		<script>
+			var socket = io.connect(window.location.origin);
+			socket.on('connect', function() {
+				socket.emit('join', {room_id: {{room_id}}, sender:'hospt'});
+			});
+			socket.on('received', function(msg){
+				if(msg.room_id == $('.selected').data('room')){
+					var $div = $("<div/>").html(msg.message);
+					$div.addClass("receive");
+					$(".chat-message").append($div);
+				}else{
+					$.each($('.person'), function(){
+						if($(this).data('room') == msg.room_id){
+							if(!$(this).hasClass("new"))
+								$(this).addClass("new");
+							$(this).find('.information').find(".information-preview").html(msg.message);
+						}
+					});
+				}
+			});
+
+			function transform(json){
+				json.PET_WEIGHT = json.PET_WEIGHT + 'kg';
+				json.PET_ADMS = (json.PET_ADMS == 2)? 'Y' : 'N';
+				switch(json.PET_SEX){
+					case '0' :
+						json.PET_SEX = '여';
+						break;
+					case '1' :
+						json.PET_SEX = '남';
+						break;
+					case '2':
+						json.PET_SEX = '여';
+						break;
+					case '3' :
+						json.PET_SEX = '남';
+						break;
+				}
+				json.PET_CONTACT = json.PET_CONTACT.replace(/-/gi, '-');
+				json.PET_AGE = json.PET_AGE + "살";
+				return json;
+			}
+
+            $(document).on('click','.person',function(){
+
+					if($(this).hasClass('new')){
+						$(this).removeClass('new');
+					}
+            		$(".selected").removeClass("selected");
+            		$(this).addClass("selected");
+					socket.disconnect();
+					socket = io.connect(window.location.origin);
+					socket.emit('join', {room_id: $(".selected").data('room'), sender:'hospt'});
+
+
+
+
+
+					$.ajax({
+						url : '/load_personal',
+						success : function(data){
+							for(key in transform(data)){
+								$('#'+key.toLowerCase()).html(data[key]);
+							}
+
+						},
+						fail : function(){
+							alert("asdfasdfasdf");
+						},
+						type : 'post',
+						dataType: 'json',
+						data : {pet_id : $(this).attr("data-id")}
+					});
+					$(".chat-message").empty();
+					$.ajax({
+						url : '/chatList',
+						success : function(data){
+							for(var i=0;i<data.length;i++){
+								var $div = $("<div/>").html(data[i].CHAT_MESSAGE);
+								if(data[i].CHAT_SEND == 0){
+									$div.addClass("send");
+								}
+								else{
+									$div.addClass("receive");
+								}
+								$(".chat-message").append($div);
+
+							}
+						},
+						error : function (xhr, ajaxOptions, thrownError){
+							if(xhr.status==404) {
+								$(".chat-message").empty();
+								alert("채팅을 시작하세요!");
+							}
+						},
+						fail : function(data){
+						},
+						type : 'post',
+						dataType: 'json',
+						data : {room_id : $(this).attr("data-room")}
+					});
+            });
+            $(document).ready(function() {
+					$.ajax({
+						url : '/load_personal',
+						success : function(data){
+							for(key in transform(data)){
+								$('#'+key.toLowerCase()).html(data[key]);
+							}
+
+						},
+						fail : function(){
+							alert("asdfasdfasdf");
+						},
+						type : 'post',
+						dataType: 'json',
+						data : {pet_id : $(".selected").attr("data-id")}
+					});
+					$(".chat-message").empty();
+					$.ajax({
+						url : '/chatList',
+						success : function(data){
+							for(var i=0;i<data.length;i++){
+								var $div = $("<div/>").html(data[i].CHAT_MESSAGE);
+								if(data[i].CHAT_SEND == 0){
+									$div.addClass("send");
+								}
+								else{
+									$div.addClass("receive");
+								}
+								$(".chat-message").append($div);
+
+							}
+						},
+						error : function (xhr, ajaxOptions, thrownError){
+							if(xhr.status==404) {
+								$(".chat-message").empty();
+								alert("채팅을 시작하세요!");
+							}
+						},
+						fail : function(data){
+						},
+						type : 'post',
+						dataType: 'json',
+						data : {room_id : $(".selected").attr("data-room")}
+					});
+
+
+				var origin = $('.chat-list').html();
+				$("#search").on('keydown', function(e){
+						let word = $(this).val();
+						var key = event.keyCode || event.charCode;
+					setTimeout(function() {
+											if( key == 8 || key == 46 ){
+												if(word.length == 0){
+													$('.chat-list').empty();
+													$('.chat-list').append(origin);
+												}
+											}
+
+					}, 500);
+
+				});
+				$("#search").on('keyup', function(e) {
+							setTimeout(function() {
+
+						let word = $("#search").val();
+
+						if(word.length>0){
+								$.ajax({
+									url : '/chat_search',
+									success : function(d){
+										$('.chat-list').empty();
+										for(var i=0;i<d.length;i++){
+											var $name = $('<div/>').addClass('information-name').html(d[i].PET_PERSON + " (" + d[i].PET_NAME + ")");
+											var $preview = $('<div/>').addClass('information-preview').html("저번시간에 쪽지했었어요.");
+
+
+											var $person = $('<div/>').addClass('person').attr('data-id', d[i].PET_ID).attr('data-room', d[i].ROOM_ID)
+														.append($('<div/>').addClass('new-circle'))
+														.append($('<div/>').addClass('circle').html(d[i].PET_NAME.substring(0,1)))
+														.append($('<div/>').addClass('information').append($name).append($preview))
+														.append($('<div/>'));
+											$('.chat-list').append($person);
+
+										}
+									},
+									fail : function(data){
+										alert("asdf");
+									},
+									type : 'post',
+									dataType: 'json',
+									data : {keyword : word}
+								});
+
+
+
+						}
+						else{
+							$('.chat-list').empty();
+							$('.chat-list').append(origin);
+						}
+					}, 500);
+				});
+			});
+		</script>
+		<script>
 			$(document).ready(function(){
-
-				$.ajax({
-                    type: "POST",
-                    url: "/chatList",
-                    dataType: 'json',
-                    data: { room_id : {{room_id}} }, // stringify
-                    success: function(data){
-                        for(var i=0;i<data.length;i++){
-                            //중복검사
-                            if(data[i].CHAT_SEND == 1){
-                            	$('#messages').append('<li>' +'>>'+ data[i].CHAT_MESSAGE + '</li>');
-                            }
-                            else{
-	                            $('#messages').append('>> '+ data[i].CHAT_MESSAGE +'<br>');
-                            }
-                        }
-                    }
-                });
+			/*
+				console.log("Helllo");
+				window.parent.postMessage("Hello","http://localhost:5000");
+				window.onbeforeunload = function(){
+				};
+			*/
 
 
-				var socket = io.connect(window.location.origin);
-				socket.on('connect', function() {
-					socket.emit('join', {room_id: {{room_id}}});
-				});
-
-		
-
-				socket.on('received', function(msg){
-					console.log(msg);
-					console.log(typeof msg);
-					if(msg.sender == 'pet')
-						$('#messages').append('<li>' +'>>'+ msg.message + '</li>');
-				});
 
 
 
 				$('#sendButton').on('click', function(){
-					$('#messages').append('>> '+$('#myMessage').val()+'<br>');
-					socket.emit('message', {message : $('#myMessage').val(), room_id: {{room_id}}, type : 'text', sender : 'hospt'});
-					$('#myMessage').val('');
+					if($('.selected').length > 0){
+						socket.emit('message', {message : $('#myMessage').val(), room_id: $('.selected').data('room'), type : 'text', sender : 'hospt'});
+						$('#myMessage').val('');
+
+					}
+
 				});
 			});
 		</script>
+        <div class="nav-container">
+            <div class="nav">
+				<div></div>
+                <div class="logo"><img src="{{url_for('static', filename='img/logo.png') }}"></div>
+				<div></div>
+            </div>
 
+        </div>
+		<div class="chat-container">
+			<div class="chat-list-container">
+				<div class="chat-search"><input type="text" id="search" placeholder="환자를 검색해주세요."/><i class="fa fa-search"></i></div>
+				<div class="chat-list">
 
-		<h1>아직 채팅 목록부분 UI를 못끝내서 일단 pet_id를 전달받아서 채팅하는걸로..</h1>
-		<ul id="messages"></ul>
-		<input type="text" id="myMessage"><button id="sendButton">SEND</button>
-	
+					{% for data in rooms %}
+
+					<div class='person {% if data["ROOM_ID"] == room_id %} selected {% elif data["NEW"] == True %} new{% else %} {% endif %}' data-id='{{data["PET_ID"]}}' data-room='{{data["ROOM_ID"]}}'>
+						<div class="new-circle"></div>
+						<div class="circle">{{data["PET_NAME"][0]}}</div>
+						<div class="information">
+							<div class="information-name">{{data["PET_PERSON"]}} ({{data["PET_NAME"]}})</div>
+							<div class="information-preview">{{data["LAST"]}}</div>
+						</div>
+						<div></div>
+					</div>
+					{% endfor %}
+
+				</div>
+			</div>
+			<div class="chat-message-container">
+				<div class="chat-message"></div>
+				<div class="chat-insert">
+					<textarea id="myMessage" placeholder="메세지를 입력하세요."></textarea>
+					<div class="sendButton-container">
+						<div id="sendButton"></div>
+					</div>
+				</div>
+			</div>
+			<div class="chat-personal">
+				<div class="personal-container">
+					<div class="title">개인정보</div>
+					<div class="personal">
+						<div class="personal-1">
+							<div class="personal-1-1">
+								<div>이름</div>
+								<div id="pet_name"></div>
+								<div>보호자</div>
+								<div id="pet_person"></div>
+							</div>
+							<div class="personal-1-2">
+								<div>품종</div>
+								<div id="pet_spec"></div>
+								<div>나이(Y)</div>
+								<div id="pet_age"></div>
+								<div>성별</div>
+								<div id="pet_sex"></div>
+								<div>체중(kg)</div>
+								<div id="pet_weight"></div>
+								<div>입원여부</div>
+								<div id="pet_adms"></div>
+								<div>연락처</div>
+								<div id="pet_contact"></div>
+								</div>
+
+						</div>
+					</div>
+				</div>
+				<div class="personal-container">
+					<div class="title">특이사항</div>
+					<div class="personal-2">
+						<div class="personal-2-1">
+							<div id="pet_profile"></div>
+						</div>
+						<div id="more">환자정보 더보기</div>
+					</div>
+				</div>
+
+			</div>
+
+		</div>
 
 	</body>
 </html>

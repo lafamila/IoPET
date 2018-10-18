@@ -20,20 +20,64 @@ def petLogin():
 
     return "", 404
 
+@app.route('/chatList', methods=['POST'])
+def getChat():
+    room_id = request.form.get('room_id')
+    q = "SELECT * FROM `chat` WHERE `ROOM_ID` = %s ORDER BY `CHAT_DATETIME`"
+    result = query(q, True, False, True, room_id)
+    if result:
+        return result, 200
+    else:
+        return "", 404
+
+@app.route('/chat_search', methods=['POST'])
+def getChatSearched():
+    hospt_id = session["hospital_id"]
+    search = request.form.get('keyword')
+    q = "SELECT * FROM `pet` join `chat_room` on pet.PET_ID = chat_room.PET_ID and pet.HOSPITAL_ID = chat_room.HOSPITAL_ID WHERE pet.HOSPITAL_ID = %s AND (pet.PET_NAME LIKE %s or pet.PET_PERSON LIKE %s)"
+    result = query(q, True, False, True, hospt_id, "%{}%".format(search), "%{}%".format(search))
+    return result if result else ""
 
 @app.route('/chat', methods=['GET'])
 def chat():
+    hospt_id = session["hospital_id"]
     pet_id = request.args.get('pet')
-    q = "SELECT ROOM_ID FROM `pet` join `chat_room` on pet.PET_ID = chat_room.PET_ID and pet.HOSPITAL_ID = chat_room.HOSPITAL_ID WHERE pet.PET_ID = %s";
-    result = query(q, True, True, False, pet_id)
+    q = "SELECT * FROM `pet` join `chat_room` on pet.PET_ID = chat_room.PET_ID and pet.HOSPITAL_ID = chat_room.HOSPITAL_ID WHERE pet.HOSPITAL_ID = %s";
+    result = query(q, True, False, False, hospt_id)
+
     if result:
-        return render_template('chat.html', hospt_id=session["hospital_id"], room_id=result["ROOM_ID"])
+        room_id = None
+        for i in result:
+            last = query("SELECT * FROM `chat` WHERE `ROOM_ID` = %s ORDER BY `CHAT_DATETIME` DESC LIMIT 1", True, True, False, i["ROOM_ID"])
+            i["LAST"] = last["CHAT_MESSAGE"] if last else ""
+            if last:
+                if last["CHAT_SEND"] == "0":
+                    i["NEW"] = False
+                elif last["CHAT_READ"] == "1":
+                    i["NEW"] = True
+                else:
+                    i["NEW"] = False
+            else:
+                i["NEW"] = False
+            if i["PET_ID"] == pet_id:
+                room_id = i["ROOM_ID"]
+        return render_template('chat.html', hospt_id=session["hospital_id"], rooms=result, room_id=room_id)
     else:
         return "<h1>Wrong Pet ID</h1>"
 
 @socket.on('join')
 def on_join(data):
     room = data['room_id']
+    receive = 1 if data["sender"] == "hospt" else 0
+    print(room)
+    print(receive)
+    last = query(
+        "SELECT `CHAT_DATETIME` FROM `chat` WHERE `CHAT_SEND` = %s AND `ROOM_ID` = %s ORDER BY `CHAT_DATETIME` DESC LIMIT 1",
+        True, True, False, receive, room)
+    if last:
+        query("UPDATE `chat` SET `CHAT_READ` = 0 WHERE `ROOM_ID` = %s AND `CHAT_DATETIME` <= %s", False, False, False, room, last["CHAT_DATETIME"])
+    #data["sender"] 이용해서 pet이면 0가 보냈던 가장 최근 메세지 시간 기준 이전 모든 메세지 읽음
+    #data["sender"] 이용해서 hospt이면 1이 보냈던 가장 최근 메세지 시간 기준 이전 모든 메세지 읽음
     join_room(room)
 
 
@@ -50,17 +94,10 @@ def message(data):
     sender = 0 if data["sender"] == 'hospt' else 1
     text = 0 if data["type"] == 'text' else 1
     query(q, False, False, False, room_id, sender, text, data["message"])
-    emit('received', data, room=room_id, broadcast=True)
-
-@app.route('/chatList', methods=['POST'])
-def getChat():
-    room_id = request.form.get('room_id')
-    q = "SELECT * FROM `chat` WHERE `ROOM_ID` = %s ORDER BY `CHAT_DATETIME`"
-    result = query(q, True, False, True, room_id)
-    if result:
-        return result, 200
+    if sender == 0:
+        emit('received', data, room=room_id, broadcast=True)
     else:
-        return "", 404
+        emit('received', data, broadcast=True)
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -142,6 +179,20 @@ def main():
 def index():
     return render_template("index.html")
 
+@app.route('/insert_diagn', methods=['POST'])
+def insertDiagn():
+    ks = []
+    vs = []
+    for k in request.form:
+        ks.append("`" + k + "`")
+        vs.append(request.form.get(k))
+    ks.append("`DIAGN_DATE`")
+    ks = ",".join(ks)
+    q = "INSERT INTO `diagnosis`({}) VALUES (%s, %s, %s, %s, %s, NOW())".format(ks)
+    print(ks)
+    print(vs)
+    diag_id = query(q, False, False, False, *tuple(vs))
+    return ""
 
 @app.route('/insert_pet', methods=['POST'])
 def insertPet():
@@ -158,19 +209,29 @@ def insertPet():
     chat_room = query(q, False, False, False, vs[9], pet_id)
     return "success"
 
+@app.route('/load_medicine_by_id', methods=['POST'])
+def medicineID():
+    iid = request.form.get('iid')
+
+
+    result = query("SELECT * FROM medicine WHERE MEDI_ID = %s",
+                   True, True, True, iid)
+    return result if result else ""
+
 
 @app.route('/load_medicine', methods=['POST'])
-def medicineCategory():
+def medicine():
     s = set()
     words1 = request.form.getlist('word1[]')
     if len(words1) > 0:
         for word in words1:
+            print(word)
             result = query("SELECT * FROM disease_medicine WHERE `DISEASE_ID` = %s", True, False, False, word)
             if result:
                 if len(s) > 0:
-                    s = s.union({r["CATEGORY_ID"] for r in result})
+                    s = s.union({r["MEDI_ID"] for r in result})
                 else:
-                    s = {r["CATEGORY_ID"] for r in result}
+                    s = {r["MEDI_ID"] for r in result}
             else:
                 continue
         result = query("SELECT * FROM medicine WHERE MEDI_ID = %s" + " OR MEDI_ID = %s" * (len(s) - 1),
@@ -180,18 +241,22 @@ def medicineCategory():
     return ""
 
 
-@app.route('/load_medicine', methods=['POST'])
-def medicine():
-    iid = request.form.getlist('id')
-    result = query("SELECT * FROM medicine WHERE CATEGORY_ID = %s", True, False, True, iid)
-    return result if result else ""
 
 
 
 @app.route('/search_disease', methods=['POST'])
-def search():
+def searchDisease():
     word = request.form.get('search')
     result = query("SELECT * FROM disease WHERE `DISEASE_NAME` LIKE %s", True, False, True,
+                   "%{}%".format(word))
+    if result:
+        return result
+    return ""
+
+@app.route('/search_medicine', methods=['POST'])
+def searchMedicine():
+    word = request.form.get('search')
+    result = query("SELECT * FROM medicine WHERE `MEDI_NAME` LIKE %s", True, False, True,
                    "%{}%".format(word))
     if result:
         return result
