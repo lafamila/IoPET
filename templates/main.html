@@ -21,6 +21,16 @@
 
             var view = "#diag";
             var before = "#diag";
+            $(document).on('click', '.check', function(){
+                $( ".act" ).removeClass('act');
+                view = "#more";
+                $.each($(".nav-menu"), function(){
+                    if($(this).data("item") == "more")
+                        $(this).addClass('act');
+                });
+                $(".vs-wrapper").hide();
+                $(view).show();
+            });
             $(document).on('click','.nav-menu',function(){
                 before = $( ".act" ).attr('data-item');
                 $( ".act" ).removeClass('act');
@@ -306,7 +316,10 @@
                 }
             });
             $(document).on('click','.submit',function(){
-                var arr = [];
+                
+		if(confirm('처방할까요?')){
+
+		var arr = [];
                 $.each($(".diag_names"), function () {
                     arr.push($(this).val());
                 });
@@ -315,11 +328,17 @@
                     type: "POST",
                     url: "/insert_diagn",
                     dataType: 'json',
-                    data: { DIAGN_NAME: name, DIAGN_OPINION: $(".diagnosis").val()+"\n"+$(".opinion").val(), DIAGN_PRICE:$(".stock-price").html().replace(",",""), HOSPITAL_ID: {{hospt_id}}, PET_ID: {{pet_id}} }, // stringify
-                    success: function(data){
-                        location.reload();
+                    data: { DIAGN_NAME: name, DIAGN_OPINION: $(".diagnosis").val()+"\n"+$(".opinion").val(), DIAGN_PRICE:$(".stock-price").html().replace(",",""), HOSPITAL_ID: {{hospt_id}}, PET_ID: {{pet_id}} }, 
+                    complete: function(data){
+                        //window.location.reload(true);
+			setTimeout(function(){// wait for 5 secs(2)
+           			console.log("reload");
+				location.reload(); // then reload the page.(3)
+      			}, 3000); 
+			//location.reload();
                     }
                 });
+		}
             });
         </script>
         <div class="header-container">
@@ -502,19 +521,585 @@
                     </div>
                 </div>
                 <div class="vs-wrapper" id="more">
-				    <div class="vs-content">hello2</div>
+				    <div class="vs-content">
+                        <script>
+                $.ajax({
+                    url : '/load_personal',
+                    success : function(data){
+                        for(key in transform(data)){
+                            $('#'+key.toLowerCase()+"2").html(data[key]);
+                        }
+
+                    },
+                    fail : function(){
+                        alert("asdfasdfasdf");
+                    },
+                    type : 'post',
+                    dataType: 'json',
+                    data : {pet_id : "{{pet_id}}"}
+                });
+            $(document).on('click','.predict-searched-result-list-item1',function(){
+                if($(this).attr("data-select") == 1){
+                    $(this).attr("data-select", 0);
+                    $(this).removeClass('tagSelected');
+                }
+                else{
+                    $(".predict-searched-result-list-item1.tagSelected").attr("data-select", 0);
+                    $(".predict-searched-result-list-item1.tagSelected").removeClass('tagSelected');
+                    $(this).attr("data-select", 1);
+                    $(this).addClass('tagSelected');
+                }
+                $.ajax({
+                    url : '/disease',
+                    success : function(data){
+                        $("#myResult").html(data.DISEASE_DIAG);
+
+                    },
+                    fail : function(){
+                        alert("asdfasdfasdf");
+                    },
+                    type : 'post',
+                    dataType: 'json',
+                    data : {disease_id : $(".predict-searched-result-list-item1.tagSelected").attr("data-item")}
+                });
+            });
+
+                        </script>
+
+                        <div class="content-more">
+                            <div class="table-big">
+                                <div class="title">개인정보</div>
+                                <div class="personal">
+                                    <div class="name">이름</div>
+                                    <div class="cell" id="pet_name2"></div>
+                                    <div class="name">보호자</div>
+                                    <div class="cell" id="pet_person2"></div>
+                                    <div class="name">품종</div>
+                                    <div class="cell" id="pet_spec2"></div>
+                                    <div class="name">입원여부</div>
+                                    <div class="cell" id="pet_adms2"></div>
+                                    <div class="name">나이(Y)</div>
+                                    <div class="cell" id="pet_age2"></div>
+                                    <div class="name">체중(kg)</div>
+                                    <div class="cell" id="pet_weight2"></div>
+                                    <div class="name">성별</div>
+                                    <div class="cell" id="pet_sex2"></div>
+                                    <div class="name"></div>
+                                    <div class="cell"></div>
+                                    <div class="name">연락처</div>
+                                    <div class="cell" id="pet_contact2"></div>
+                                    <div class="name"></div>
+                                    <div class="cell"></div>
+                                    <div class="name cell-2">특이사항</div>
+                                    <div class="cell cell-2" id="pet_profile2"></div>
+                                </div>
+
+                            </div>
+                            <div class="table-big">
+                                <div class="title">의심질병</div>
+                                <div id="predict_disease"></div>
+                            </div>
+                            <div class="table-big">
+                                <div class="title">검사결과 및 소견</div>
+                                <div id="myResult"></div>
+                            </div>
+                            <div class="table-big">
+                                <div class="title">검사내역</div>
+                                <div class="predict-result">
+                                    <div class="predict-result-cell-title">
+                                        <div>검사일자</div>
+                                        <div>검사명</div>
+                                        <div>환자명</div>
+                                    </div>
+                                    <div class="predict-result-cell">
+                                        <div>2018-07-06 &nbsp;11:05</div>
+                                        <div>혈액검사 bi.</div>
+                                        <div>콜라</div>
+                                    </div>
+                                    <div class="predict-result-cell"></div>
+                                    <div class="predict-result-cell"></div>
+                                    <div class="predict-result-cell"></div>
+                                    <div class="predict-result-cell"></div>
+                                    <div class="predict-result-cell"></div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="content-search">
+
+                        </div>
+                        <div class="content-insert">
+                            <div class="more-result">
+                                <div>
+                                    <div class="title">
+                                        <div>검사명</div>
+                                        <div>검사항목명</div>
+                                        <div>결과</div>
+                                        <div>Min.</div>
+                                        <div>Max.</div>
+                                        <div>단위</div>
+                                        <div>입력자</div>
+                                    </div>
+                                    <div class="more-results">
+                                        <div>
+                                           <div>혈액검사 bi.</div>
+                                           <div>ALT_</div>
+                                           <div>94</div>
+                                           <div>12.12</div>
+                                           <div>12.12</div>
+                                           <div>U/L</div>
+                                           <div>권기빈</div>
+                                        </div>
+                                        <div>
+                                           <div></div>
+                                           <div>ATS_</div>
+                                           <div>25</div>
+                                           <div>12.12</div>
+                                           <div>12.12</div>
+                                           <div>U/L</div>
+                                           <div>권기빈</div>
+                                        </div>
+                                        <div>
+                                           <div></div>
+                                           <div>ALP_</div>
+                                           <div>80</div>
+                                           <div>12.12</div>
+                                           <div>12.12</div>
+                                           <div></div>
+                                           <div></div>
+                                        </div>
+                                        <div>
+                                           <div></div>
+                                           <div>Total bilirubin_</div>
+                                           <div>0.03</div>
+                                           <div>12.12</div>
+                                           <div>12.12</div>
+                                           <div></div>
+                                           <div></div>
+                                        </div>
+                                        <div>
+                                           <div></div>
+                                           <div>r-GT-</div>
+                                           <div>8</div>
+                                           <div>12.12</div>
+                                           <div>12.12</div>
+                                           <div></div>
+                                           <div></div>
+                                        </div>
+                                        <div>
+                                           <div></div>
+                                           <div></div>
+                                           <div></div>
+                                           <div></div>
+                                           <div></div>
+                                           <div></div>
+                                           <div></div>
+                                        </div>
+                                        <div>
+                                           <div></div>
+                                           <div></div>
+                                           <div></div>
+                                           <div></div>
+                                           <div></div>
+                                           <div></div>
+                                           <div></div>
+                                        </div>
+                                        <div>
+                                           <div></div>
+                                           <div></div>
+                                           <div></div>
+                                           <div></div>
+                                           <div></div>
+                                           <div></div>
+                                           <div></div>
+                                        </div>
+                                        <div>
+                                           <div></div>
+                                           <div></div>
+                                           <div></div>
+                                           <div></div>
+                                           <div></div>
+                                           <div></div>
+                                           <div></div>
+                                        </div>
+                                        <div>
+                                           <div></div>
+                                           <div></div>
+                                           <div></div>
+                                           <div></div>
+                                           <div></div>
+                                           <div></div>
+                                           <div></div>
+                                        </div>
+                                        <div>
+                                           <div></div>
+                                           <div></div>
+                                           <div></div>
+                                           <div></div>
+                                           <div></div>
+                                           <div></div>
+                                           <div></div>
+                                        </div>
+                                        <div>
+                                           <div></div>
+                                           <div></div>
+                                           <div></div>
+                                           <div></div>
+                                           <div></div>
+                                           <div></div>
+                                           <div></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="more-final">
+                                <div>
+                                    <div class="title">검사결과 메모</div>
+                                    <textarea rows="4" style="resize:none;" class="opinion" placeholder="메모를 입력해주세요"></textarea>
+                                </div>
+                                <div class="submits">
+                                    <div class="check">검사하기</div>
+                                    <div class="submit">처방하기</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
                 <div class="vs-wrapper" id="medicines">
-				    <div class="vs-content">hello3</div>
+				    <div class="vs-content">
+                        <div class="content-container">
+                            <div class="headers">
+                                <div style="font-size:3vh; font-weight:normal; color:#7B7B7B;">
+                                    <div class="nav-menu-logo">
+                                        <img src="{{url_for('static', filename='img/man.png') }}">
+                                    </div>
+                                    보고내역
+                                </div>
+                                <select style="height:3.7vh;">
+                                  <option value="recent">대분류</option>
+                                </select>
+                                <input type="text" style="height:3.3vh;" placeholder="검색어를 입력해주세요">
+                                <div></div>
+                                <div class="total">Total. 2</div>
+                                <div></div>
+                                <div></div>
+                            </div>
+                            <div class="content">
+                                <div class="title">
+                                    <div>no.</div>
+                                    <div>보 호 자</div>
+                                    <div>환자이름</div>
+                                    <div>질병명</div>
+                                    <div>취급일자</div>
+                                    <div>보고생성일자</div>
+                                    <div>담당자</div>
+                                    <div>보고번호</div>
+                                </div>
+                                <div class="content-table">
+                                    <div class="content-row">
+                                        <div>1</div>
+                                        <div>권기빈</div>
+                                        <div>봄이</div>
+                                        <div>쿠싱증후군</div>
+                                        <div>2018-09-12</div>
+                                        <div>2018-09-12 오후 3:00</div>
+                                        <div>최진영</div>
+                                        <div>MCM20180912_0000000018</div>
+                                    </div>
+                                    <div class="content-row">
+                                        <div>2</div>
+                                        <div>권기빈</div>
+                                        <div>콜라</div>
+                                        <div>ADHD</div>
+                                        <div>2018-09-13</div>
+                                        <div>2018-09-13 오후 1:15</div>
+                                        <div>최진영</div>
+                                        <div>MCM20180913_0000000310</div>
+                                    </div>
+                                </div>
+
+                                <div class="content-last">
+                                    <div></div>
+                                    <div class="paging">
+                                        <div class="arrow">&lt;</div>
+                                        <div class="act num" data-item="1">1</div>
+                                        <div class="num" data-item="2">2</div>
+                                        <div class="num" data-item="3">3</div>
+                                        <div class="num" data-item="4">4</div>
+                                        <div class="num" data-item="5">5</div>
+                                        <div class="arrow">&gt;</div>
+                                    </div>
+
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+				    <div class="vs-content">
+                        <div class="content-container">
+                            <div class="headers">
+                                <div style="font-size:3vh; font-weight:normal; color:#7B7B7B;">
+                                    <div class="nav-menu-logo">
+                                        <img src="{{url_for('static', filename='img/man.png') }}">
+                                    </div>
+                                    취급 마약류
+                                </div>
+                                <select style="height:3.7vh;">
+                                  <option value="recent">대분류</option>
+                                </select>
+                                <input type="text" style="height:3.3vh;" placeholder="검색어를 입력해주세요">
+                                <div></div>
+                                <div class="total">Total. 1</div>
+                                <div></div>
+                                <div></div>
+                            </div>
+                            <div class="content">
+                                <div class="title-2">
+                                    <div>no.</div>
+                                    <div>제품명</div>
+                                    <div>일수</div>
+                                    <div>일투수</div>
+                                    <div>일투량</div>
+                                    <div>낱개단위</div>
+                                    <div>낱개수량</div>
+                                    <div>폐기량</div>
+                                    <div>포장단위</div>
+                                    <div>제조번호</div>
+                                    <div>유통기한</div>
+                                    <div>제품코드</div>
+                                    <div>저장소 번호</div>
+                                    <div>제조일련번호</div>
+                                </div>
+                                <div class="content-table">
+                                    <div class="content-row2">
+                                        <div>1</div>
+                                        <div style="font-size:1.2vh;">하나페노바르비탈 정 30mg(Phenob..</div>
+                                        <div>1</div>
+                                        <div>3</div>
+                                        <div>1.2906</div>
+                                        <div>정</div>
+                                        <div>3.62725</div>
+                                        <div>0.37281</div>
+                                        <div>병</div>
+                                        <div>0000244243</div>
+                                        <div>2018-09-12</div>
+                                        <div>880657800</div>
+                                        <div>S0002</div>
+                                        <div>B000008085</div>
+                                    </div>
+
+                                </div>
+
+                                <div class="content-last">
+                                    <div></div>
+                                    <div class="paging">
+                                        <div class="arrow">&lt;</div>
+                                        <div class="act num" data-item="1">1</div>
+                                        <div class="num" data-item="2">2</div>
+                                        <div class="num" data-item="3">3</div>
+                                        <div class="num" data-item="4">4</div>
+                                        <div class="num" data-item="5">5</div>
+                                        <div class="arrow">&gt;</div>
+                                    </div>
+
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
                 </div>
                 <div class="vs-wrapper" id="memo">
-				    <div class="vs-content">hello4</div>
+				    <div class="vs-content">
+                        <div class="content-container">
+                            <div class="headers">
+                                <div style="font-size:3vh; font-weight:normal; color:#7B7B7B;">
+                                    <div class="nav-menu-logo">
+                                        <img src="{{url_for('static', filename='img/man.png') }}">
+                                    </div>
+                                    수가/메모관리
+                                </div>
+                                <select style="height:3.7vh;">
+                                  <option value="recent">최근 저장순</option>
+                                </select>
+                                <input type="text" style="height:3.3vh;" placeholder="검색어를 입력해주세요">
+                                <div></div>
+                                <div class="total">Total. 0</div>
+                                <div></div>
+                                <div></div>
+                            </div>
+                            <div class="content">
+                                <div class="title">
+                                    <div>no.</div>
+                                    <div>구 &nbsp; 분</div>
+                                    <div>제 &nbsp; 목</div>
+                                    <div>내 &nbsp; 용</div>
+                                    <div>저장 일자</div>
+                                </div>
+                                <div class="content-table">
+                                    <div class="content-row">
+                                        <div>1</div>
+                                        <div>메모</div>
+                                        <div>인사법</div>
+                                        <div>먼저 친절하게 웃으면서 안녕하세요?</div>
+                                        <div>2018-10-01</div>
+                                    </div>
+                                    <div class="content-row">
+                                        <div>2</div>
+                                        <div>수가</div>
+                                        <div>기본 진료비</div>
+                                        <div>12,000</div>
+                                        <div>2018-09-01</div>
+                                    </div>
+                                    <div class="content-row">
+                                        <div>3</div>
+                                        <div>수가</div>
+                                        <div>혈액검사</div>
+                                        <div>34,000</div>
+                                        <div>2018-09-01</div>
+                                    </div>
+
+                                </div>
+
+                                <div class="content-last">
+                                    <div></div>
+                                    <div class="paging">
+                                        <div class="arrow">&lt;</div>
+                                        <div class="act num" data-item="1">1</div>
+                                        <div class="num" data-item="2">2</div>
+                                        <div class="num" data-item="3">3</div>
+                                        <div class="num" data-item="4">4</div>
+                                        <div class="num" data-item="5">5</div>
+                                        <div class="arrow">&gt;</div>
+                                    </div>
+
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+
+                    </div>
                 </div>
                 <div class="vs-wrapper" id="person">
-				    <div class="vs-content">hello5</div>
-                </div>
-                <div class="vs-wrapper" id="chat">
-				    <div class="vs-content">hello6</div>
+                        <script>
+                            var page_id;
+                            function allPerson(jsons){
+                                $.ajax({
+                                    url : '/allPerson',
+                                    success : function(data){
+                                        let count = 0;
+                                        for(key in data){
+                                            var sex = '?';
+                                            switch(data[key]['PET_SEX']){
+                                              case '0': sex = 'F'; break;
+                                              case '1': sex = 'M'; break;
+                                              case '2': sex = 'CF'; break;
+                                              case '3': sex = 'CM'; break;
+                                              default: sex = '?'; break;
+                                            }
+                                            var row = '<div class="content-row"><div>'+(count+1)+'</div><div>'+data[key]['PET_PERSON']+'</div><div>'+data[key]['PET_NAME']+'</div><div>'+data[key]['PET_SPEC']+'</div><div>'+sex+'</div><div>'+data[key]['PET_AGE']+'</div><div>'+data[key]['DIAGN_NAME']+'</div><div>'+data[key]['DIAGN_DATE'].split(' ')[0]+'</div></div>';
+                                            $('#person .content-table').append(row);
+                                            console.log(data[key]);
+                                            count++;
+                                        }
+                                        $('#person .total').html("Total. "+count);
+                                        for(let x = 0;x<12-count;x++){
+                                            var row = '<div class="content-row"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>';
+                                            $('#person .content-table').append(row);
+                                        }
+
+                                    },
+                                    fail : function(){
+                                        alert("asdfasdfasdf");
+                                    },
+                                    type : 'post',
+                                    dataType: 'json',
+                                    data : jsons
+                                });
+                            }
+                            $(document).on('click','#person .num',function(){
+                                $( "#person .act" ).removeClass('act');
+                                $(this).addClass('act');
+                                $('.content-table').empty();
+
+                                allPerson({hospt_id : "{{hospt_id}}", page : $('#person .act').data('item')});
+                            });
+                            $(document).ready(function() {
+                                $('#person .content-table').empty();
+
+                                allPerson({hospt_id : "{{hospt_id}}", page : $('#person .act').data('item'), num : 'all'});
+
+                            });
+
+                    </script>
+
+
+				    <div class="vs-content">
+                        <div class="content-container">
+                            <div class="headers">
+                                <div style="font-size:3vh; font-weight:normal; color:#7B7B7B;">
+                                    <div class="nav-menu-logo">
+                                        <img src="{{url_for('static', filename='img/man.png') }}">
+                                    </div>
+                                    보호자관리
+                                </div>
+                                <select style="height:3.7vh;">
+                                  <option value="recent">최근 방문순</option>
+                                </select>
+                                <input type="text" style="height:3.3vh;" placeholder="검색어를 입력해주세요">
+                                <div></div>
+                                <div class="total">Total. 0</div>
+                                <div></div>
+                                <div></div>
+                            </div>
+                            <div class="content">
+                                <div class="title">
+                                    <div>no.</div>
+                                    <div>보 호 자</div>
+                                    <div>환자 이름</div>
+                                    <div>품 &nbsp; 종</div>
+                                    <div>성 &nbsp; 별</div>
+                                    <div>나 &nbsp; 이 (Y)</div>
+                                    <div>질병 기록</div>
+                                    <div>최근 방문일자</div>
+                                </div>
+                                <div class="content-table">
+
+
+                                </div>
+
+                                <div class="content-last">
+                                    <div></div>
+                                    <div class="paging">
+                                        <div class="arrow">&lt;</div>
+                                        <div class="act num" data-item="1">1</div>
+                                        <div class="num" data-item="2">2</div>
+                                        <div class="num" data-item="3">3</div>
+                                        <div class="num" data-item="4">4</div>
+                                        <div class="num" data-item="5">5</div>
+                                        <div class="arrow">&gt;</div>
+                                    </div>
+
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+
+                    </div>
                 </div>
 
             </div>
