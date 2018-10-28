@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:weightSum="8"
+    tools:context=".LoginActivity">
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="4"
+        android:src="@drawable/logo1"
+        android:scaleType="centerInside"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="( for chat TEST )"
+        android:textSize="14dp"
+        android:gravity="center_horizontal"
+        android:textColor="#7B7B7B"/>
+    <EditText
+        android:id="@+id/petID"
+        android:layout_margin="40dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:hint="PET ID"
+        android:inputType="number"
+        android:gravity="center"/>
+    <Button
+        android:id="@+id/goChat"
+        android:background="#5C74B7"
+        android:textColor="#ffffff"
+        android:textSize="40dp"
+        android:text="채팅하기"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:gravity="center"/>
+</LinearLayout>
