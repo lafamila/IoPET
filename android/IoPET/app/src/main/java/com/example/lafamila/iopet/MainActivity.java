@@ -1,7 +1,11 @@
 package com.example.lafamila.iopet;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,6 +29,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -129,7 +134,16 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
+        Button upload = (Button)findViewById(R.id.button2);
+        upload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                photoPickerIntent.setType("image/*");
+                startActivityForResult(photoPickerIntent, 1);
+                //http://programmerguru.com/android-tutorial/how-to-upload-image-to-php-server/
+            }
+        });
         Button send = (Button)findViewById(R.id.button1);
         send.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -244,4 +258,35 @@ public class MainActivity extends AppCompatActivity {
             return new JSONArray();
         }
     }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1)
+            if (resultCode == Activity.RESULT_OK) {
+                Uri selectedImage = data.getData();
+
+                String filePath = getPath(selectedImage);
+                String file_extn = filePath.substring(filePath.lastIndexOf(".") + 1);
+
+                if (file_extn.equals("img") || file_extn.equals("jpg") || file_extn.equals("jpeg") || file_extn.equals("gif") || file_extn.equals("png")) {
+                    //Upload image
+                } else {
+                    //NOT IN REQUIRED FORMAT
+                }
+            }
+    }
+
+    public String getPath(Uri uri) {
+        String[] projection = {MediaStore.MediaColumns.DATA};
+        Cursor cursor = managedQuery(uri, projection, null, null, null);
+        int column_index = cursor
+                .getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+        cursor.moveToFirst();
+        String imagePath = cursor.getString(column_index);
+
+        return imagePath;
+    }
 }
+
