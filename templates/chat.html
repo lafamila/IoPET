@@ -10,14 +10,19 @@
 	</head>
 	<body>
 		<script>
+			console.log(window.location.origin);
 			var socket = io.connect(window.location.origin);
 			socket.on('connect', function() {
 				socket.emit('join', {room_id: {{room_id}}, sender:'hospt'});
 			});
 			socket.on('received', function(msg){
+				console.log(msg.message);
 				if(msg.room_id == $('.selected').data('room')){
 					var $div = $("<div/>").html(msg.message);
-					$div.addClass("receive");
+					if(msg.sender == "hospt")
+						$div.addClass("send");
+					else
+						$div.addClass("receive");
 					$(".chat-message").append($div);
 				}else{
 					$.each($('.person'), function(){
@@ -59,8 +64,6 @@
 					}
             		$(".selected").removeClass("selected");
             		$(this).addClass("selected");
-					socket.disconnect();
-					socket = io.connect(window.location.origin);
 					socket.emit('join', {room_id: $(".selected").data('room'), sender:'hospt'});
 
 
@@ -158,7 +161,7 @@
 
 
 				var origin = $('.chat-list').html();
-				$("#search").on('keydown', function(e){
+				$("#search").on('keydown', function(event){
 						let word = $(this).val();
 						var key = event.keyCode || event.charCode;
 					setTimeout(function() {
@@ -171,6 +174,22 @@
 
 					}, 500);
 
+				});
+				$("#myMessage").on("keyup", function(e){
+					setTimeout(function(){
+						if(e.keyCode == 13){
+						if($('.selected').length > 0){
+						//var $div = $("<div/>").html($('#myMessage').val());
+						//$div.addClass("send");
+						//$(".chat-message").append($div);
+
+						socket.emit('message', {message : $('#myMessage').val(), room_id: $('.selected').data('room'), type : 'text', sender : 'hospt'});
+						$('#myMessage').val('');
+
+					}
+
+						}
+					}, 500);
 				});
 				$("#search").on('keyup', function(e) {
 							setTimeout(function() {
@@ -230,15 +249,23 @@
 
 				$('#sendButton').on('click', function(){
 					if($('.selected').length > 0){
-						var $div = $("<div/>").html($('#myMessage').val());
-						$div.addClass("send");
-						$(".chat-message").append($div);
+						//var $div = $("<div/>").html($('#myMessage').val());
+						//$div.addClass("send");
+						//$(".chat-message").append($div);
 
 						socket.emit('message', {message : $('#myMessage').val(), room_id: $('.selected').data('room'), type : 'text', sender : 'hospt'});
 						$('#myMessage').val('');
 
 					}
 
+				});
+				$('#more').on('click', function(){
+					if (confirm('이전 진료는 완료 하셨나요?')) {
+    // Save it!				
+						window.opener.parent.location.href = '/main?pet='+$(".selected").data('id');
+					} else {
+    // Do nothing!
+					}
 				});
 			});
 		</script>

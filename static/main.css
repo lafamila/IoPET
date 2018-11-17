@@ -147,9 +147,14 @@ textarea, select, input, button { outline: none; }
 	width: 100%;
 }
 
-#diag{
+#diag, #more{
     display:grid;
     grid-template-rows:21fr 843fr 20fr;
+    grid-template-columns:31fr 1859fr 30fr;
+}
+#medicines{
+    display:grid;
+    grid-template-rows:21fr 421fr 421fr 20fr;
     grid-template-columns:31fr 1859fr 30fr;
 }
 #diag>.vs-content{
@@ -160,9 +165,32 @@ textarea, select, input, button { outline: none; }
 
     display:grid;
     grid-template-rows:25fr 10fr 48fr;
+}
+#medicines>.vs-content:nth-child(1){
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start:2;
+    grid-row-end:3;
+
+}
+#medicines>.vs-content:nth-child(2){
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start:3;
+    grid-row-end:4;
 
 }
 
+#more>.vs-content{
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start:2;
+    grid-row-end:3;
+
+    display:grid;
+    grid-template-rows:25fr 1.36fr 56.64fr;
+
+}
 /* table */
 .table-big{
     display:grid;
@@ -227,12 +255,56 @@ textarea, select, input, button { outline: none; }
     grid-template-columns:520fr 680fr 650fr;
     grid-gap: 5px;
 }
+.content-more{
+    display:grid;
+    grid-template-columns:520fr 243fr 543fr 543fr;
+    grid-gap: 5px;
+}
+.predict-result{
+    border:var(--main-bg-color) 0.5px solid;
+    display:grid;
+    grid-template-rows: repeat(7, 1fr);
+}
+.predict-result-cell, .predict-result-cell-title{
+    display:grid;
+    grid-template-columns:6fr 5fr 5fr;
+}
 
+.predict-result-cell-title{
+    background:#F5F5F5;
+}
+.predict-result-cell-title div{
+    padding-left:10px;
+    color:#3E3E3E;
+    font-weight:600;
+    font-size:1.112vh;
+    display:inline-flex;
+    align-items: center;
+}
+.predict-result-cell div{
+    padding-left:10px;
+    color:#3E3E3E;
+    font-weight:600;
+    font-size:1.112vh;
+    display:inline-flex;
+    align-items: center;
+    font-weight:normal;
+}
+.predict-result-cell:nth-child(odd){
+    background:#F5F5F5;
+}
+.predict-result-cell:nth-child(even){
+    background:#FFFFFF;
+}
 .personal{
     display:grid;
     grid-template-columns: 10fr 16fr 10fr 16fr;
     grid-template-rows: 1fr 1fr 1fr 1fr 1fr 2fr;
     border:var(--main-bg-color) 0.5px solid;
+}
+#predict_disease, #myResult{
+    border:var(--main-bg-color) 0.5px solid;
+
 }
 .prev{
     display:grid;
@@ -244,7 +316,7 @@ textarea, select, input, button { outline: none; }
     overflow-y:auto;
     height:19.44vh;
 }
-.content-cell-prev-c{
+.content-cell-prev-c, #myResult{
     overflow-y:scroll;
     padding:10px;
     padding-left:20px;
@@ -261,7 +333,7 @@ textarea, select, input, button { outline: none; }
     font-size:1.297vh;
     line-height: 1.6em;
 }
-#pet_profile{
+#pet_profile, #pet_profile2{
     grid-column-start: 2;
     grid-column-end: 5;
 }
@@ -313,7 +385,7 @@ textarea, select, input, button { outline: none; }
     color:#000000;
 
 }
-.searched-result-list-item1, .searched-result-list-item2, .medicine-categorys{
+.predict-searched-result-list-item1, .searched-result-list-item1, .searched-result-list-item2, .medicine-categorys{
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -445,6 +517,51 @@ textarea, select, input, button { outline: none; }
     grid-template-rows: 425fr 65fr;
     grid-row-gap: 5px;
 }
+.more-result, .more-final{
+    display:grid;
+    grid-template-rows: 494.1fr 65fr;
+    grid-row-gap: 25px;
+
+}
+.more-final>div:nth-child(1),.more-result>div:nth-child(1){
+    display:grid;
+    grid-template-rows: 35fr 479.1fr;
+}
+.more-result .title, .more-final .title{
+    color:#3E3E3E;
+    font-weight:600;
+    font-size:1.297vh;
+    background-image: linear-gradient(to bottom, #F5F5F5 , var(--main-bg-color));
+    display:inline-flex;
+    align-items: center;
+}
+.more-result .title > div, .more-final .title{
+    padding-left:10px;
+}
+.more-result .title{
+    display:grid;
+    grid-template-columns: 1fr 1fr 1fr 0.8fr 0.8fr 0.6fr 0.6fr;
+}
+.more-results{
+    display:grid;
+    grid-template-rows: repeat(12, 1fr);
+    border:var(--main-bg-color) 1px solid;
+}
+.more-results>div{
+    display:grid;
+    grid-template-columns: 1fr 1fr 1fr 0.8fr 0.8fr 0.6fr 0.6fr;
+    grid-column-gap: 1px;
+    background:var(--main-bg-color);
+}
+.more-results>div>div{
+    padding-left:10px;
+    color:#3E3E3E;
+    font-weight:noraml;
+    font-size:1.112vh;
+    display:inline-flex;
+    align-items: center;
+    background:#FFFFFF;
+}
 .opinion{
     padding:20px;
     font-family: 'Gothic A1', sans-serif;
@@ -471,4 +588,149 @@ textarea, select, input, button { outline: none; }
 }
 .submit{
     background:#203B84;
+}
+#medicines .content-container{
+    background:#ffffff;
+    height:38.52vh;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 140fr 1500fr 140fr;
+    grid-template-rows: 41fr 40fr 642fr;
+    grid-row-gap:45px;
+}
+
+
+#person .blank, #memo .blank{
+    height:3.93vw;
+}
+#person .content-container, #memo .content-container{
+    background:#ffffff;
+    height:77.04vh;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 140fr 1500fr 140fr;
+    grid-template-rows: 41fr 40fr 642fr;
+    grid-row-gap:45px;
+}
+#person .headers, #medicines .headers, #memo .headers{
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 2;
+    grid-row-end: 3;
+
+    display:grid;
+    grid-template-columns: 250fr 180fr 295fr 173fr 91fr 15fr 191fr;
+    grid-gap: 5px;
+    align-items:center;
+}
+#person .content, #medicines .content, #memo .content{
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 3;
+    grid-row-end: 4;
+
+    display:grid;
+    grid-template-rows: 50fr 540fr;
+
+    margin-bottom:20px;
+    background:#979797;
+}
+#person .content-row, #person .title{
+    display:grid;
+    grid-template-columns: 100fr 250fr 250fr 350fr 200fr 200fr 500fr 350fr;
+    color: #3E3E3E;
+}
+#memo .content-row, #memo .title{
+    display:grid;
+    grid-template-columns: 100fr 100fr 600fr 600fr 200fr;
+    color: #3E3E3E;
+}
+#medicines .content-row, #medicines .title{
+    display:grid;
+    grid-template-columns: 100fr 250fr 250fr 350fr 200fr 250fr 200fr 300fr;
+    color: #3E3E3E;
+}
+#medicines .content-row2, #medicines .title-2{
+    display:grid;
+    grid-template-columns: 100fr 600fr 150fr 160fr 240fr 200fr 220fr 200fr 210fr 280fr 250fr 260fr 290fr 300fr;
+    color: #3E3E3E;
+}
+#person .content-row:nth-child(odd), #medicines .content-row:nth-child(odd), #memo .content-row:nth-child(odd){
+    background:#FFFFFF;
+}
+#person .content-row:nth-child(even), #medicines .content-row:nth-child(even), #memo .content-row:nth-child(even){
+    background:#F9F9F9;
+}
+#person .content-row>div, #medicines .content-row>div, #medicines .content-row2>div, #memo .content-row>div{
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    padding-left:10px;
+}
+#person .headers select{
+    border-radius: 2px;
+    border-color: #979797;
+    color: #3E3E3E;
+    text-align: center;
+    text-align-last: center;
+    font-size:20px;
+}
+#person .total, #medicines .total, #memo .total{
+    color: #8D8D8D;
+    font-weight: bold;
+    font-size: 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#person .paging, #medicines .paging, #memo .paging{
+    color: #8D8D8D;
+    font-size: 18px;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr;
+    grid-column-gap: 19px;
+}
+#person .paging>div, #medicines .paging>div, #memo .paging>div{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #3E3E3E
+}
+#person .paging > div.arrow, #medicines .paging > div.arrow, #memo .paging > div.arrow{
+    color: #CECECE;
+    font-weight: bold;
+}
+#person .paging > div.act, #medicines .paging > div.act, #memo .paging > div.act{
+    color: #5C74B7;
+    font-weight: bold;
+}
+#person .title> div, #medicines .title> div, #medicines .title-2> div, #memo .title> div{
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    padding-left:10px;
+    color: #484848;
+    background: #FFFFFF;
+    font-weight:bold;
+}
+#person .content-table, #memo .content-table{
+    background:#FFFFFF;
+    display: grid;
+    grid-template-rows: repeat(12, 1fr);
+}
+
+#medicines .content-table{
+    background:#FFFFFF;
+    display: grid;
+    grid-template-rows: repeat(6, 1fr);
+}
+
+.content-last{
+    background:#FFFFFF;
+    display:grid;
+    grid-template-columns: 1004fr 191fr;
 }

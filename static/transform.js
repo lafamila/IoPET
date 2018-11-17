@@ -65,6 +65,7 @@ function appendDisease(name, disease_id, recommend){
      });
      if(!idArr1.includes(name.split("(")[0])){
         $("#searched1").append("<div class='searched-result-list-item1' data-select='0' data-item='"+disease_id+"' data-recommend='"+recommend+"'>"+name.split("(")[0]+"</span>");
+        $("#predict_disease").append("<div class='predict-searched-result-list-item1' data-select='0' data-item='"+disease_id+"' data-recommend='"+recommend+"'>"+name.split("(")[0]+"</span>");
      }
 
 }

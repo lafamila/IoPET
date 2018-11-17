@@ -311,6 +311,12 @@ def diag():
             return render_template('diag.html', hospt_name=hospt_name, pet_id=pet_id, hospt_id=hospt_id)
 
     return redirect('/')
+@app.route('/disease', methods=['POST'])
+def diseaseByID():
+    disease_id = request.form.get('disease_id')
+    q = "SELECT * FROM `disease` WHERE `DISEASE_ID` = %s";
+    data = query(q, True, True, True, disease_id)
+    return data if data else ""
 
 
 @app.route('/person')

@@ -60,7 +60,10 @@ textarea, select, input, button { outline: none; }
     display: grid;
     grid-template-rows: 47fr 11fr;
 }
-
+.chat-message{
+    height:74.63vh;
+    overflow-y:auto;
+}
 .chat-search{
     background: #F9F9F9;
     padding-left:22px;
