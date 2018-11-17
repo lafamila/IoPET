@@ -1,914 +1,228 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
-</head>
+    <head>
+        <meta charset="UTF-8">
+    </head>
 
-<body>
-    <style>
-        @import url('https://fonts.googleapis.com/css?family=Gothic+A1');
-        html, body{
-            margin:0px;
-            font-family: 'Gothic A1', sans-serif;
-        }
-        body{
-            box-sizing:border-box;
-        }
-        textarea, select, input, button { outline: none; }
-        /* width */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-
-        /* Track */
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        /* Handle */
-        ::-webkit-scrollbar-thumb {
-            background: #F3F6FF;
-            border:#7B7B7B 0.7px solid;
-            border-right:none;
-        }
-
-        /* Handle on hover */
-        ::-webkit-scrollbar-thumb:hover {
-            background: #F3F6FF;
-        }
-        .blank{
-            height:3.93vw;
-        }
-        .content-container{
-            background:#ffffff;
-            height:41.57vw;
-            width: 100%;
-            display: grid;
-            grid-template-columns: 140fr 1500fr 140fr;
-            grid-template-rows: 41fr 50fr 590fr;
-            grid-row-gap:22px;
-        }
-        .header{
-            grid-column-start: 2;
-            grid-column-end: 3;
-            grid-row-start: 2;
-            grid-row-end: 3;
-
-            display:grid;
-            grid-template-columns: 250fr 475fr 173fr 91fr 15fr 191fr;
-            grid-gap: 5px;
-        }
-        .content{
-            grid-column-start: 2;
-            grid-column-end: 3;
-            grid-row-start: 3;
-            grid-row-end: 4;
-
-            display:grid;
-            grid-template-rows: 50fr 540fr;
-            grid-row-gap:0.5px;
-
-            margin-bottom:20px;
-            background:#979797;
-        }
-        .content-row, .title{
-            display:grid;
-            grid-template-columns: 100fr 150fr 150fr 220fr 100fr 100fr 220fr 180fr;
-            color: #3E3E3E;
-        }
-        .content-row:nth-child(odd){
-            background:#FFFFFF;
-        }
-        .content-row:nth-child(even){
-            background:#F9F9F9;
-        }
-        .content-row>div{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .header select{
-            border-radius: 2px;
-            border-color: #979797;
-            color: #3E3E3E;
-            text-align: center;
-            text-align-last: center;
-            font-size:20px;
-        }
-        .total{
-            color: #8D8D8D;
-            font-weight: bold;
-            font-size: 18px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .paging{
-            color: #8D8D8D;
-            font-size: 18px;
-
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-            grid-template-rows: 1fr;
-            grid-column-gap: 19px;
-        }
-        .paging > div{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            color: #3E3E3E
-        }
-        .paging > div.arrow{
-            color: #CECECE;
-            font-weight: bold;
-        }
-        .paging > div.act{
-            color: #5C74B7;
-            font-weight: bold;
-        }
-        .title> div{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #484848;
-            background: #F1F5FB;
-        }
-        .content-table{
-            background:#FFFFFF;
-            display: grid;
-            grid-template-rows: repeat(12, 1fr);
-        }
-    </style>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script>
-            var page_id;
-            function allPerson(jsons){
-                $.ajax({
-                    url : '/allPerson',
-                    success : function(data){
-                        for(key in data){
-                            var sex = '?';
-                            switch(data[key]['PET_SEX']){
-                              case '0': sex = 'F'; break;
-                              case '1': sex = 'M'; break;
-                              case '2': sex = 'CF'; break;
-                              case '3': sex = 'CM'; break;
-                              default: sex = '?'; break;
-                            }
-                            var row = '<div class="content-row"><div>no.</div><div>'+data[key]['PET_PERSON']+'</div><div>'+data[key]['PET_NAME']+'</div><div>'+data[key]['PET_SPEC']+'</div><div>'+sex+'</div><div>'+data[key]['PET_AGE']+'</div><div>'+data[key]['DIAGN_NAME']+'</div><div>'+data[key]['DIAGN_DATE'].split(' ')[0]+'</div></div>';
-                            $('.content-table').append(row);
-                            console.log(data[key]);
-                        }
-
-                    },
-                    fail : function(){
-                        alert("asdfasdfasdf");
-                    },
-                    type : 'post',
-                    dataType: 'json',
-                    data : jsons
-                });
+    <body>
+        <style>
+            @import url('https://fonts.googleapis.com/css?family=Gothic+A1');
+            html, body{
+                margin:0px;
+                font-family: 'Gothic A1', sans-serif;
             }
-            $(document).on('click','.num',function(){
-                $( ".act" ).removeClass('act');
-                $(this).addClass('act');
-                $('.content-table').empty();
-
-                allPerson({hospt_id : "{{hospt_id}}", page : $('.act').data('item')});
-            });
-            $(document).ready(function() {
-                $('.content-table').empty();
-
-                allPerson({hospt_id : "{{hospt_id}}", page : $('.act').data('item'), num : 'all'});
-            });
-
-    </script>
-    <div class="content-container">
-        <div class="header">
-            <select>
-              <option value="recent">최근 방문순</option>
-            </select>
-            <input type="text">
-            <div></div>
-            <div class="total">Total. 122</div>
-            <div></div>
-            <div c  lass="paging">
-                <div class="arrow">&lt;</div>
-                <div class="act num" data-item="1">1</div>
-                <div class="num" data-item="2">2</div>
-                <div class="num" data-item="3">3</div>
-                <div class="num" data-item="4">4</div>
-                <div class="num" data-item="5">5</div>
-                <div class="arrow">&gt;</div>
-            </div>
-        </div>
-        <div class="content">
-            <div class="title">
-                <div>no.</div>
-                <div>보 호 자</div>
-                <div>환자 이름</div>
-                <div>품 &nbsp; 종</div>
-                <div>성 &nbsp; 별</div>
-                <div>나 &nbsp; 이 (Y)</div>
-                <div>질병 기록</div>
-                <div>최근 방문일자</div>
-            </div>
-            <div class="content-table">
-
-
-
-            </div>
-        </div>
-
-    </div>
-</body>
-=======
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-</head>
-
-<body>
-    <style>
-        @import url('https://fonts.googleapis.com/css?family=Gothic+A1');
-        html, body{
-            margin:0px;
-            font-family: 'Gothic A1', sans-serif;
-        }
-        body{
-            box-sizing:border-box;
-        }
-        textarea, select, input, button { outline: none; }
-        /* width */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-
-        /* Track */
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        /* Handle */
-        ::-webkit-scrollbar-thumb {
-            background: #F3F6FF;
-            border:#7B7B7B 0.7px solid;
-            border-right:none;
-        }
-
-        /* Handle on hover */
-        ::-webkit-scrollbar-thumb:hover {
-            background: #F3F6FF;
-        }
-        .blank{
-            height:3.93vw;
-        }
-        .content-container{
-            background:#ffffff;
-            height:41.57vw;
-            width: 100%;
-            display: grid;
-            grid-template-columns: 140fr 1500fr 140fr;
-            grid-template-rows: 41fr 50fr 590fr;
-            grid-row-gap:22px;
-        }
-        .header{
-            grid-column-start: 2;
-            grid-column-end: 3;
-            grid-row-start: 2;
-            grid-row-end: 3;
-
-            display:grid;
-            grid-template-columns: 250fr 475fr 173fr 91fr 15fr 191fr;
-            grid-gap: 5px;
-        }
-        .content{
-            grid-column-start: 2;
-            grid-column-end: 3;
-            grid-row-start: 3;
-            grid-row-end: 4;
-
-            display:grid;
-            grid-template-rows: 50fr 540fr;
-            grid-row-gap:0.5px;
-
-            margin-bottom:20px;
-            background:#979797;
-        }
-        .content-row, .title{
-            display:grid;
-            grid-template-columns: 100fr 150fr 150fr 220fr 100fr 100fr 220fr 180fr;
-            color: #3E3E3E;
-        }
-        .content-row:nth-child(odd){
-            background:#FFFFFF;
-        }
-        .content-row:nth-child(even){
-            background:#F9F9F9;
-        }
-        .content-row>div{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .header select{
-            border-radius: 2px;
-            border-color: #979797;
-            color: #3E3E3E;
-            text-align: center;
-            text-align-last: center;
-            font-size:20px;
-        }
-        .total{
-            color: #8D8D8D;
-            font-weight: bold;
-            font-size: 18px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .paging{
-            color: #8D8D8D;
-            font-size: 18px;
-
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-            grid-template-rows: 1fr;
-            grid-column-gap: 19px;
-        }
-        .paging > div{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            color: #3E3E3E
-        }
-        .paging > div.arrow{
-            color: #CECECE;
-            font-weight: bold;
-        }
-        .paging > div.act{
-            color: #5C74B7;
-            font-weight: bold;
-        }
-        .title> div{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #484848;
-            background: #F1F5FB;
-        }
-        .content-table{
-            background:#FFFFFF;
-            display: grid;
-            grid-template-rows: repeat(12, 1fr);
-        }
-    </style>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script>
-            var page_id;
-            function allPerson(jsons){
-                $.ajax({
-                    url : '/allPerson',
-                    success : function(data){
-                        for(key in data){
-                            var sex = '?';
-                            switch(data[key]['PET_SEX']){
-                              case '0': sex = 'F'; break;
-                              case '1': sex = 'M'; break;
-                              case '2': sex = 'CF'; break;
-                              case '3': sex = 'CM'; break;
-                              default: sex = '?'; break;
-                            }
-                            var row = '<div class="content-row"><div>no.</div><div>'+data[key]['PET_PERSON']+'</div><div>'+data[key]['PET_NAME']+'</div><div>'+data[key]['PET_SPEC']+'</div><div>'+sex+'</div><div>'+data[key]['PET_AGE']+'</div><div>'+data[key]['DIAGN_NAME']+'</div><div>'+data[key]['DIAGN_DATE'].split(' ')[0]+'</div></div>';
-                            $('.content-table').append(row);
-                            console.log(data[key]);
-                        }
-
-                    },
-                    fail : function(){
-                        alert("asdfasdfasdf");
-                    },
-                    type : 'post',
-                    dataType: 'json',
-                    data : jsons
-                });
+            body{
+                box-sizing:border-box;
             }
-            $(document).on('click','.num',function(){
-                $( ".act" ).removeClass('act');
-                $(this).addClass('act');
-                $('.content-table').empty();
-
-                allPerson({hospt_id : "{{hospt_id}}", page : $('.act').data('item')});
-            });
-            $(document).ready(function() {
-                $('.content-table').empty();
-
-                allPerson({hospt_id : "{{hospt_id}}", page : $('.act').data('item'), num : 'all'});
-            });
-
-    </script>
-    <div class="content-container">
-        <div class="header">
-            <select>
-              <option value="recent">최근 방문순</option>
-            </select>
-            <input type="text">
-            <div></div>
-            <div class="total">Total. 122</div>
-            <div></div>
-            <div c  lass="paging">
-                <div class="arrow">&lt;</div>
-                <div class="act num" data-item="1">1</div>
-                <div class="num" data-item="2">2</div>
-                <div class="num" data-item="3">3</div>
-                <div class="num" data-item="4">4</div>
-                <div class="num" data-item="5">5</div>
-                <div class="arrow">&gt;</div>
-            </div>
-        </div>
-        <div class="content">
-            <div class="title">
-                <div>no.</div>
-                <div>보 호 자</div>
-                <div>환자 이름</div>
-                <div>품 &nbsp; 종</div>
-                <div>성 &nbsp; 별</div>
-                <div>나 &nbsp; 이 (Y)</div>
-                <div>질병 기록</div>
-                <div>최근 방문일자</div>
-            </div>
-            <div class="content-table">
-
-
-
-            </div>
-        </div>
-
-    </div>
-</body>
->>>>>>> 69fe84c62f79bda4d6097797813082b6b946da64
-=======
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-</head>
-
-<body>
-    <style>
-        @import url('https://fonts.googleapis.com/css?family=Gothic+A1');
-        html, body{
-            margin:0px;
-            font-family: 'Gothic A1', sans-serif;
-        }
-        body{
-            box-sizing:border-box;
-        }
-        textarea, select, input, button { outline: none; }
-        /* width */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-
-        /* Track */
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        /* Handle */
-        ::-webkit-scrollbar-thumb {
-            background: #F3F6FF;
-            border:#7B7B7B 0.7px solid;
-            border-right:none;
-        }
-
-        /* Handle on hover */
-        ::-webkit-scrollbar-thumb:hover {
-            background: #F3F6FF;
-        }
-        .blank{
-            height:3.93vw;
-        }
-        .content-container{
-            background:#ffffff;
-            height:41.57vw;
-            width: 100%;
-            display: grid;
-            grid-template-columns: 140fr 1500fr 140fr;
-            grid-template-rows: 41fr 50fr 590fr;
-            grid-row-gap:22px;
-        }
-        .header{
-            grid-column-start: 2;
-            grid-column-end: 3;
-            grid-row-start: 2;
-            grid-row-end: 3;
-
-            display:grid;
-            grid-template-columns: 250fr 475fr 173fr 91fr 15fr 191fr;
-            grid-gap: 5px;
-        }
-        .content{
-            grid-column-start: 2;
-            grid-column-end: 3;
-            grid-row-start: 3;
-            grid-row-end: 4;
-
-            display:grid;
-            grid-template-rows: 50fr 540fr;
-            grid-row-gap:0.5px;
-
-            margin-bottom:20px;
-            background:#979797;
-        }
-        .content-row, .title{
-            display:grid;
-            grid-template-columns: 100fr 150fr 150fr 220fr 100fr 100fr 220fr 180fr;
-            color: #3E3E3E;
-        }
-        .content-row:nth-child(odd){
-            background:#FFFFFF;
-        }
-        .content-row:nth-child(even){
-            background:#F9F9F9;
-        }
-        .content-row>div{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .header select{
-            border-radius: 2px;
-            border-color: #979797;
-            color: #3E3E3E;
-            text-align: center;
-            text-align-last: center;
-            font-size:20px;
-        }
-        .total{
-            color: #8D8D8D;
-            font-weight: bold;
-            font-size: 18px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .paging{
-            color: #8D8D8D;
-            font-size: 18px;
-
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-            grid-template-rows: 1fr;
-            grid-column-gap: 19px;
-        }
-        .paging > div{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            color: #3E3E3E
-        }
-        .paging > div.arrow{
-            color: #CECECE;
-            font-weight: bold;
-        }
-        .paging > div.act{
-            color: #5C74B7;
-            font-weight: bold;
-        }
-        .title> div{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #484848;
-            background: #F1F5FB;
-        }
-        .content-table{
-            background:#FFFFFF;
-            display: grid;
-            grid-template-rows: repeat(12, 1fr);
-        }
-    </style>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script>
-            var page_id;
-            function allPerson(jsons){
-                $.ajax({
-                    url : '/allPerson',
-                    success : function(data){
-                        for(key in data){
-                            var sex = '?';
-                            switch(data[key]['PET_SEX']){
-                              case '0': sex = 'F'; break;
-                              case '1': sex = 'M'; break;
-                              case '2': sex = 'CF'; break;
-                              case '3': sex = 'CM'; break;
-                              default: sex = '?'; break;
-                            }
-                            var row = '<div class="content-row"><div>no.</div><div>'+data[key]['PET_PERSON']+'</div><div>'+data[key]['PET_NAME']+'</div><div>'+data[key]['PET_SPEC']+'</div><div>'+sex+'</div><div>'+data[key]['PET_AGE']+'</div><div>'+data[key]['DIAGN_NAME']+'</div><div>'+data[key]['DIAGN_DATE'].split(' ')[0]+'</div></div>';
-                            $('.content-table').append(row);
-                            console.log(data[key]);
-                        }
-
-                    },
-                    fail : function(){
-                        alert("asdfasdfasdf");
-                    },
-                    type : 'post',
-                    dataType: 'json',
-                    data : jsons
-                });
+            textarea, select, input, button { outline: none; }
+            /* width */
+            ::-webkit-scrollbar {
+                width: 10px;
             }
-            $(document).on('click','.num',function(){
-                $( ".act" ).removeClass('act');
-                $(this).addClass('act');
-                $('.content-table').empty();
 
-                allPerson({hospt_id : "{{hospt_id}}", page : $('.act').data('item')});
-            });
-            $(document).ready(function() {
-                $('.content-table').empty();
-
-                allPerson({hospt_id : "{{hospt_id}}", page : $('.act').data('item'), num : 'all'});
-            });
-
-    </script>
-    <div class="content-container">
-        <div class="header">
-            <select>
-              <option value="recent">최근 방문순</option>
-            </select>
-            <input type="text">
-            <div></div>
-            <div class="total">Total. 122</div>
-            <div></div>
-            <div c  lass="paging">
-                <div class="arrow">&lt;</div>
-                <div class="act num" data-item="1">1</div>
-                <div class="num" data-item="2">2</div>
-                <div class="num" data-item="3">3</div>
-                <div class="num" data-item="4">4</div>
-                <div class="num" data-item="5">5</div>
-                <div class="arrow">&gt;</div>
-            </div>
-        </div>
-        <div class="content">
-            <div class="title">
-                <div>no.</div>
-                <div>보 호 자</div>
-                <div>환자 이름</div>
-                <div>품 &nbsp; 종</div>
-                <div>성 &nbsp; 별</div>
-                <div>나 &nbsp; 이 (Y)</div>
-                <div>질병 기록</div>
-                <div>최근 방문일자</div>
-            </div>
-            <div class="content-table">
-
-
-
-            </div>
-        </div>
-
-    </div>
-</body>
->>>>>>> 69fe84c62f79bda4d6097797813082b6b946da64
-=======
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-</head>
-
-<body>
-    <style>
-        @import url('https://fonts.googleapis.com/css?family=Gothic+A1');
-        html, body{
-            margin:0px;
-            font-family: 'Gothic A1', sans-serif;
-        }
-        body{
-            box-sizing:border-box;
-        }
-        textarea, select, input, button { outline: none; }
-        /* width */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-
-        /* Track */
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        /* Handle */
-        ::-webkit-scrollbar-thumb {
-            background: #F3F6FF;
-            border:#7B7B7B 0.7px solid;
-            border-right:none;
-        }
-
-        /* Handle on hover */
-        ::-webkit-scrollbar-thumb:hover {
-            background: #F3F6FF;
-        }
-        .blank{
-            height:3.93vw;
-        }
-        .content-container{
-            background:#ffffff;
-            height:41.57vw;
-            width: 100%;
-            display: grid;
-            grid-template-columns: 140fr 1500fr 140fr;
-            grid-template-rows: 41fr 50fr 590fr;
-            grid-row-gap:22px;
-        }
-        .header{
-            grid-column-start: 2;
-            grid-column-end: 3;
-            grid-row-start: 2;
-            grid-row-end: 3;
-
-            display:grid;
-            grid-template-columns: 250fr 475fr 173fr 91fr 15fr 191fr;
-            grid-gap: 5px;
-        }
-        .content{
-            grid-column-start: 2;
-            grid-column-end: 3;
-            grid-row-start: 3;
-            grid-row-end: 4;
-
-            display:grid;
-            grid-template-rows: 50fr 540fr;
-            grid-row-gap:0.5px;
-
-            margin-bottom:20px;
-            background:#979797;
-        }
-        .content-row, .title{
-            display:grid;
-            grid-template-columns: 100fr 150fr 150fr 220fr 100fr 100fr 220fr 180fr;
-            color: #3E3E3E;
-        }
-        .content-row:nth-child(odd){
-            background:#FFFFFF;
-        }
-        .content-row:nth-child(even){
-            background:#F9F9F9;
-        }
-        .content-row>div{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .header select{
-            border-radius: 2px;
-            border-color: #979797;
-            color: #3E3E3E;
-            text-align: center;
-            text-align-last: center;
-            font-size:20px;
-        }
-        .total{
-            color: #8D8D8D;
-            font-weight: bold;
-            font-size: 18px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .paging{
-            color: #8D8D8D;
-            font-size: 18px;
-
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-            grid-template-rows: 1fr;
-            grid-column-gap: 19px;
-        }
-        .paging > div{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            color: #3E3E3E
-        }
-        .paging > div.arrow{
-            color: #CECECE;
-            font-weight: bold;
-        }
-        .paging > div.act{
-            color: #5C74B7;
-            font-weight: bold;
-        }
-        .title> div{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #484848;
-            background: #F1F5FB;
-        }
-        .content-table{
-            background:#FFFFFF;
-            display: grid;
-            grid-template-rows: repeat(12, 1fr);
-        }
-    </style>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script>
-            var page_id;
-            function allPerson(jsons){
-                $.ajax({
-                    url : '/allPerson',
-                    success : function(data){
-                        for(key in data){
-                            var sex = '?';
-                            switch(data[key]['PET_SEX']){
-                              case '0': sex = 'F'; break;
-                              case '1': sex = 'M'; break;
-                              case '2': sex = 'CF'; break;
-                              case '3': sex = 'CM'; break;
-                              default: sex = '?'; break;
-                            }
-                            var row = '<div class="content-row"><div>no.</div><div>'+data[key]['PET_PERSON']+'</div><div>'+data[key]['PET_NAME']+'</div><div>'+data[key]['PET_SPEC']+'</div><div>'+sex+'</div><div>'+data[key]['PET_AGE']+'</div><div>'+data[key]['DIAGN_NAME']+'</div><div>'+data[key]['DIAGN_DATE'].split(' ')[0]+'</div></div>';
-                            $('.content-table').append(row);
-                            console.log(data[key]);
-                        }
-
-                    },
-                    fail : function(){
-                        alert("asdfasdfasdf");
-                    },
-                    type : 'post',
-                    dataType: 'json',
-                    data : jsons
-                });
+            /* Track */
+            ::-webkit-scrollbar-track {
+                background: transparent;
             }
-            $(document).on('click','.num',function(){
-                $( ".act" ).removeClass('act');
-                $(this).addClass('act');
-                $('.content-table').empty();
 
-                allPerson({hospt_id : "{{hospt_id}}", page : $('.act').data('item')});
-            });
-            $(document).ready(function() {
-                $('.content-table').empty();
+            /* Handle */
+            ::-webkit-scrollbar-thumb {
+                background: #F3F6FF;
+                border:#7B7B7B 0.7px solid;
+                border-right:none;
+            }
 
-                allPerson({hospt_id : "{{hospt_id}}", page : $('.act').data('item'), num : 'all'});
-            });
+            /* Handle on hover */
+            ::-webkit-scrollbar-thumb:hover {
+                background: #F3F6FF;
+            }
+            .blank{
+                height:3.93vw;
+            }
+            .content-container{
+                background:#ffffff;
+                height:41.57vw;
+                width: 100%;
+                display: grid;
+                grid-template-columns: 140fr 1500fr 140fr;
+                grid-template-rows: 41fr 50fr 590fr;
+                grid-row-gap:22px;
+            }
+            .header{
+                grid-column-start: 2;
+                grid-column-end: 3;
+                grid-row-start: 2;
+                grid-row-end: 3;
 
-    </script>
-    <div class="content-container">
-        <div class="header">
-            <select>
-              <option value="recent">최근 방문순</option>
-            </select>
-            <input type="text">
-            <div></div>
-            <div class="total">Total. 122</div>
-            <div></div>
-            <div c  lass="paging">
-                <div class="arrow">&lt;</div>
-                <div class="act num" data-item="1">1</div>
-                <div class="num" data-item="2">2</div>
-                <div class="num" data-item="3">3</div>
-                <div class="num" data-item="4">4</div>
-                <div class="num" data-item="5">5</div>
-                <div class="arrow">&gt;</div>
+                display:grid;
+                grid-template-columns: 250fr 475fr 173fr 91fr 15fr 191fr;
+                grid-gap: 5px;
+            }
+            .content{
+                grid-column-start: 2;
+                grid-column-end: 3;
+                grid-row-start: 3;
+                grid-row-end: 4;
+
+                display:grid;
+                grid-template-rows: 50fr 540fr;
+                grid-row-gap:0.5px;
+
+                margin-bottom:20px;
+                background:#979797;
+            }
+            .content-row, .title{
+                display:grid;
+                grid-template-columns: 100fr 150fr 150fr 220fr 100fr 100fr 220fr 180fr;
+                color: #3E3E3E;
+            }
+            .content-row:nth-child(odd){
+                background:#FFFFFF;
+            }
+            .content-row:nth-child(even){
+                background:#F9F9F9;
+            }
+            .content-row>div{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .header select{
+                border-radius: 2px;
+                border-color: #979797;
+                color: #3E3E3E;
+                text-align: center;
+                text-align-last: center;
+                font-size:20px;
+            }
+            .total{
+                color: #8D8D8D;
+                font-weight: bold;
+                font-size: 18px;
+
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .paging{
+                color: #8D8D8D;
+                font-size: 18px;
+
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+                grid-template-rows: 1fr;
+                grid-column-gap: 19px;
+            }
+            .paging > div{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                color: #3E3E3E;
+            }
+            .paging > div.arrow{
+                color: #CECECE;
+                font-weight: bold;
+            }
+            .paging > div.act{
+                color: #5C74B7;
+                font-weight: bold;
+            }
+            .title> div{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #484848;
+                background: #F1F5FB;
+            }
+            .content-table{
+                background:#FFFFFF;
+                display: grid;
+                grid-template-rows: repeat(12, 1fr);
+            }
+        </style>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script>
+                var page_id;
+                function allPerson(jsons){
+                    $.ajax({
+                        url : '/allPerson',
+                        success : function(data){
+                            for(key in data){
+                                var sex = '?';
+                                switch(data[key]['PET_SEX']){
+                                  case '0': sex = 'F'; break;
+                                  case '1': sex = 'M'; break;
+                                  case '2': sex = 'CF'; break;
+                                  case '3': sex = 'CM'; break;
+                                  default: sex = '?'; break;
+                                }
+                                var row = '<div class="content-row"><div>no.</div><div>'+data[key]['PET_PERSON']+'</div><div>'+data[key]['PET_NAME']+'</div><div>'+data[key]['PET_SPEC']+'</div><div>'+sex+'</div><div>'+data[key]['PET_AGE']+'</div><div>'+data[key]['DIAGN_NAME']+'</div><div>'+data[key]['DIAGN_DATE'].split(' ')[0]+'</div></div>';
+                                $('.content-table').append(row);
+                                console.log(data[key]);
+                            }
+
+                        },
+                        fail : function(){
+                            alert("asdfasdfasdf");
+                        },
+                        type : 'post',
+                        dataType: 'json',
+                        data : jsons
+                    });
+                }
+                $(document).on('click','.num',function(){
+                    $( ".act" ).removeClass('act');
+                    $(this).addClass('act');
+                    $('.content-table').empty();
+
+                    allPerson({hospt_id : "{{hospt_id}}", page : $('.act').data('item')});
+                });
+                $(document).ready(function() {
+                    $('.content-table').empty();
+
+                    allPerson({hospt_id : "{{hospt_id}}", page : $('.act').data('item'), num : 'all'});
+                });
+
+        </script>
+        <div class="content-container">
+            <div class="header">
+                <select>
+                  <option value="recent">최근 방문순</option>
+                </select>
+                <input type="text">
+                <div></div>
+                <div class="total">Total. 122</div>
+                <div></div>
+                <div c  lass="paging">
+                    <div class="arrow">&lt;</div>
+                    <div class="act num" data-item="1">1</div>
+                    <div class="num" data-item="2">2</div>
+                    <div class="num" data-item="3">3</div>
+                    <div class="num" data-item="4">4</div>
+                    <div class="num" data-item="5">5</div>
+                    <div class="arrow">&gt;</div>
+                </div>
             </div>
+            <div class="content">
+                <div class="title">
+                    <div>no.</div>
+                    <div>보 호 자</div>
+                    <div>환자 이름</div>
+                    <div>품 &nbsp; 종</div>
+                    <div>성 &nbsp; 별</div>
+                    <div>나 &nbsp; 이 (Y)</div>
+                    <div>질병 기록</div>
+                    <div>최근 방문일자</div>
+                </div>
+                <div class="content-table">
+
+
+
+                </div>
+            </div>
+
         </div>
-        <div class="content">
-            <div class="title">
-                <div>no.</div>
-                <div>보 호 자</div>
-                <div>환자 이름</div>
-                <div>품 &nbsp; 종</div>
-                <div>성 &nbsp; 별</div>
-                <div>나 &nbsp; 이 (Y)</div>
-                <div>질병 기록</div>
-                <div>최근 방문일자</div>
-            </div>
-            <div class="content-table">
+    </body>
 
-
-
-            </div>
-        </div>
-
-    </div>
-</body>
->>>>>>> 69fe84c62f79bda4d6097797813082b6b946da64
 </html>
