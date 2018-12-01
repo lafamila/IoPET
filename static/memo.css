@@ -1,0 +1,87 @@
+@import url('https://fonts.googleapis.com/css?family=Gothic+A1');
+html, body{
+    --main-bg-color: #EAEAEA;
+    margin:0px;
+    height:100%;
+    width:100%;
+    font-family: 'Gothic A1', sans-serif;
+
+}
+
+body{
+    display: grid;
+    grid-template-rows: 7.94vh 92.06vh;
+}
+
+textarea, select, input, button { outline: none; }
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #F3F6FF;
+    border:#7B7B7B 0.7px solid;
+    border-right:none;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #F3F6FF;
+}
+.nav-container{
+    background-image: linear-gradient(to right, #203B84 , #436DB9);
+}
+.nav{
+    padding-left:22px;
+    height:100%;
+    display:inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+.logo > img{
+    height: 2.64vh;
+}
+
+.memo-container{
+    display: grid;
+    grid-template-columns: 5fr 50fr 2fr;
+}
+
+.memo-left, .memo-right{
+    display: grid;
+    grid-template-rows: 5fr 5fr 5fr 40fr 10fr 5fr;
+    grid-row-gap: 10px;
+}
+
+.memo-left > div{
+    display:inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.memo-right > div{
+    display:inline-flex;
+    align-items: center;
+}
+
+.submit-container{
+    display: grid !important;
+    grid-template-rows: 1fr 1fr;
+    grid-template-columns: 45fr 5fr;
+}
+
+.submit{
+    color:white;
+    height:3vw;
+    background-color:#203B84;
+    display:inline-flex;
+    align-items: center;
+    justify-content: center;
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 2;
+    grid-row-end: 3;
+}

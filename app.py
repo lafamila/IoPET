@@ -48,6 +48,17 @@ def uploadImage():
     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
     return os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
+@app.route('/memo', methods=['GET'])
+def memo():
+    iid = request.args.get('id')
+    if iid != '0':
+
+        result = query('SELECT * FROM stock WHERE `STOCK_ID` = %s', True, True, False, iid)
+        return render_template('memo.html', iid=iid, title=result["STOCK_NAME"], content=result["STOCK_PRICE"], types=result["STOCK_TYPE"])
+    else:
+        return render_template('memo.html')
+
+
 @app.route('/chat', methods=['GET'])
 def chat():
     hospt_id = session["hospital_id"]
@@ -187,6 +198,32 @@ def main():
 def index():
     return render_template("index.html")
 
+@app.route('/insert_memo', methods=['POST'])
+def insertMemo():
+    title = request.form.get("title")
+    type = request.form.get("type")
+    content = request.form.get("content")
+    q = "INSERT INTO `stock`(`STOCK_TYPE`, `STOCK_NAME`, `STOCK_PRICE`, `STOCK_TIME`) VALUES (%s, %s, %s, DATE(NOW()))"
+    diag_id = query(q, False, False, False, type, title, content)
+    return ""
+
+
+@app.route('/update_memo', methods=['POST'])
+def updateMemo():
+    iid = request.form.get("iid")
+    title = request.form.get("title")
+    type = request.form.get("type")
+    content = request.form.get("content")
+    q = "UPDATE `stock` SET `STOCK_TYPE`=%s, `STOCK_NAME`=%s, `STOCK_PRICE`=%s, `STOCK_TIME`=DATE(NOW()) WHERE `STOCK_ID`=%s"
+    print(q)
+    print(iid)
+    print(title)
+    print(type)
+    print(content)
+
+    diag_id = query(q, False, False, False, type, title, content, iid)
+    return ""
+
 @app.route('/insert_diagn', methods=['POST'])
 def insertDiagn():
     ks = []
@@ -197,8 +234,6 @@ def insertDiagn():
     ks.append("`DIAGN_DATE`")
     ks = ",".join(ks)
     q = "INSERT INTO `diagnosis`({}) VALUES (%s, %s, %s, %s, %s, NOW())".format(ks)
-    print(ks)
-    print(vs)
     diag_id = query(q, False, False, False, *tuple(vs))
     return ""
 
@@ -249,8 +284,29 @@ def medicine():
     return ""
 
 
+@app.route('/search_stock', methods=['POST'])
+def searchStock():
+    word = request.form.get('search')
+    types = request.form.get('type')
 
+    if types == "0":
+        q = " WHERE 1 "
+    elif types == "1":
+        q = " WHERE `STOCK_TYPE` = 1 "
+    else:
+        q = " WHERE `STOCK_TYPE` = 0 "
 
+    if len(word) == 0:
+        result = query('SELECT * FROM stock' + q + 'ORDER BY `STOCK_TIME` DESC', True, False, True)
+    else :
+        result = query('SELECT * FROM stock' + q + 'AND (`STOCK_NAME` LIKE %s OR `STOCK_PRICE` LIKE %s) ORDER BY `STOCK_TIME` DESC', True, False, True, "%{}%".format(word), "%{}%".format(word))
+    return result if result else "{}"
+@app.route('/delete_stock', methods=['POST'])
+def deleteStock():
+    iid = request.form.get('id')
+    print(iid)
+    query('DELETE FROM stock WHERE `STOCK_ID` = %s', False, False, False, iid)
+    return "success"
 
 @app.route('/search_disease', methods=['POST'])
 def searchDisease():

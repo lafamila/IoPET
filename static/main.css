@@ -578,12 +578,16 @@ textarea, select, input, button { outline: none; }
     font-size:2.04vh;
     font-weight:600;
 }
-.check, .submit{
+.check, .submit, .backDiag{
     display:inline-flex;
     align-items: center;
     justify-content: center;
 }
-.check{
+.backDiag{
+    grid-column-start: 1;
+    grid-column-end: 3;
+}
+.backDiag, .check{
     background:#7B7B7B;
 }
 .submit{
@@ -643,6 +647,14 @@ textarea, select, input, button { outline: none; }
 #memo .content-row, #memo .title{
     display:grid;
     grid-template-columns: 100fr 100fr 600fr 600fr 200fr;
+    color: #3E3E3E;
+}
+#memo .title{
+    background: #FFFFFF;
+}
+#memo .content-row.edit, #memo .title.edit{
+    display:grid;
+    grid-template-columns: 100fr 100fr 600fr 600fr 200fr 100fr;
     color: #3E3E3E;
 }
 #medicines .content-row, #medicines .title{

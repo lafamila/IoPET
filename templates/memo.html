@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Chat</title>
+        <link href="{{url_for('static', filename='memo.css') }}" rel="stylesheet">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	</head>
+	<body>
+		<script>
+
+            $(document).on('click','.submit',function(){
+                    if($("#iid").val() != ""){
+					$.ajax({
+						url : '/update_memo',
+						success : function(){
+                            close();
+
+						},
+						fail : function(){
+							alert("asdfasdfasdf");
+						},
+						type : 'post',
+						data : {iid:$("#iid").val(), type : $("#type").val(), title : $("#title").val(), content : $("#content").val()}
+					});
+                    }
+                    else{
+
+					$.ajax({
+						url : '/insert_memo',
+						success : function(){
+                            close();
+
+						},
+						fail : function(){
+							alert("asdfasdfasdf");
+						},
+						type : 'post',
+						data : {type : $("#type").val(), title : $("#title").val(), content : $("#content").val()}
+					});
+					}
+            });
+            $(document).ready(function() {
+			});
+		</script>
+        <div class="nav-container">
+            <div class="nav">
+				<div></div>
+                <div class="logo"><img src="{{url_for('static', filename='img/logo.png') }}"></div>
+				<div></div>
+            </div>
+
+        </div>
+		<div class="memo-container">
+            <div class="memo-left">
+
+                <div></div>
+                <div>구분</div>
+                <div>제목</div>
+                <div>내용</div>
+                <div></div>
+                <div></div>
+            </div>
+            <div class="memo-right">
+                <div></div>
+                <div>
+                <select id="type">
+
+                    {% if iid %}
+                    <option value="0" {% if types == '0' %}selected{% endif %}>수가</option>
+                    <option value="1" {% if types == '1' %}selected{% endif %}>메모</option>
+                    {% else %}
+                    <option value="0">수가</option>
+                    <option value="1">메모</option>
+                    {% endif %}
+                </select>
+                </div>
+                <div>
+                <input type="text" id="title" value="{{title}}">
+                </div>
+                <textarea id="content">{{content}}</textarea>
+                <div class="submit-container"><div class="submit">완료</div></div>
+                <div></div>
+            </div>
+            <div><input type="hidden" value="{{iid}}" id="iid"/>></div>
+		</div>
+
+	</body>
+</html>

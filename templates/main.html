@@ -31,6 +31,16 @@
                 $(".vs-wrapper").hide();
                 $(view).show();
             });
+            $(document).on('click', '.backDiag', function(){
+                $( ".act" ).removeClass('act');
+                view = "#diag";
+                $.each($(".nav-menu"), function(){
+                    if($(this).data("item") == "diag")
+                        $(this).addClass('act');
+                });
+                $(".vs-wrapper").hide();
+                $(view).show();
+            });
             $(document).on('click','.nav-menu',function(){
                 before = $( ".act" ).attr('data-item');
                 $( ".act" ).removeClass('act');
@@ -564,6 +574,236 @@
                 });
             });
 
+            var $moreData = $('<div/>').append($('<div/>')).append($('<div/>')).append($('<div/>')).append($('<div/>')).append($('<div/>')).append($('<div/>')).append($('<div/>'));
+
+            var moreData = "<div>\
+                               <div>혈액검사 bi.</div>\
+                               <div>ALT_</div>\
+                               <div>94</div>\
+                               <div>12.12</div>\
+                               <div>12.12</div>\
+                               <div>U/L</div>\
+                               <div>권기빈</div>\
+                            </div>\
+                            <div>\
+                               <div></div>\
+                               <div>ATS_</div>\
+                               <div>25</div>\
+                               <div>12.12</div>\
+                               <div>12.12</div>\
+                               <div>U/L</div>\
+                               <div>권기빈</div>\
+                            </div>\
+                            <div>\
+                               <div></div>\
+                               <div>ALP_</div>\
+                               <div>80</div>\
+                               <div>12.12</div>\
+                               <div>12.12</div>\
+                               <div></div>\
+                               <div></div>\
+                            </div>\
+                            <div>\
+                               <div></div>\
+                               <div>Total bilirubin_</div>\
+                               <div>0.03</div>\
+                               <div>12.12</div>\
+                               <div>12.12</div>\
+                               <div></div>\
+                               <div></div>\
+                            </div>\
+                            <div>\
+                               <div></div>\
+                               <div>r-GT-</div>\
+                               <div>8</div>\
+                               <div>12.12</div>\
+                               <div>12.12</div>\
+                               <div></div>\
+                               <div></div>\
+                            </div>\
+                            <div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                            </div>\
+                            <div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                            </div>\
+                            <div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                            </div>\
+                            <div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                            </div>\
+                            <div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                            </div>\
+                            <div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                            </div>\
+                            <div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                            </div>";
+           var moreData2 = "<div>\
+                               <div>초음파검사 bi.</div>\
+                               <div>ALT_</div>\
+                               <div>6</div>\
+                               <div>18.12</div>\
+                               <div>18.12</div>\
+                               <div>U/L</div>\
+                               <div>이경민</div>\
+                            </div>\
+                            <div>\
+                               <div></div>\
+                               <div>ATS_</div>\
+                               <div>25</div>\
+                               <div>18.118</div>\
+                               <div>12.18</div>\
+                               <div>U/L</div>\
+                               <div></div>\
+                            </div>\
+                            <div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                            </div>\
+                            <div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                            </div>\
+                            <div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                            </div>\
+                            <div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                            </div>\
+                            <div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                            </div>\
+                            <div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                            </div>\
+                            <div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                            </div>\
+                            <div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                            </div>\
+                            <div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                            </div>\
+                            <div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                               <div></div>\
+                            </div>";
+			$(document).on('click','.predict-result-cell',function(){
+			    if($(this).data('item') == 0){
+			        $(".more-results").empty();
+                    $(".more-results").append(moreData);
+			    }
+			    else if($(this).data('item') == 1){
+			        $(".more-results").empty();
+                    $(".more-results").append(moreData2);
+			    }
+
+			});
+
                         </script>
 
                         <div class="content-more">
@@ -611,12 +851,16 @@
                                         <div>검사명</div>
                                         <div>환자명</div>
                                     </div>
-                                    <div class="predict-result-cell">
+                                    <div class="predict-result-cell" data-item="0">
                                         <div>2018-07-06 &nbsp;11:05</div>
                                         <div>혈액검사 bi.</div>
                                         <div>콜라</div>
                                     </div>
-                                    <div class="predict-result-cell"></div>
+                                    <div class="predict-result-cell" data-item="1">
+                                        <div>2018-08-19 &nbsp;12:04</div>
+                                        <div>초음파검사 bi.</div>
+                                        <div>콜라</div>
+                                    </div>
                                     <div class="predict-result-cell"></div>
                                     <div class="predict-result-cell"></div>
                                     <div class="predict-result-cell"></div>
@@ -641,114 +885,7 @@
                                         <div>입력자</div>
                                     </div>
                                     <div class="more-results">
-                                        <div>
-                                           <div>혈액검사 bi.</div>
-                                           <div>ALT_</div>
-                                           <div>94</div>
-                                           <div>12.12</div>
-                                           <div>12.12</div>
-                                           <div>U/L</div>
-                                           <div>권기빈</div>
-                                        </div>
-                                        <div>
-                                           <div></div>
-                                           <div>ATS_</div>
-                                           <div>25</div>
-                                           <div>12.12</div>
-                                           <div>12.12</div>
-                                           <div>U/L</div>
-                                           <div>권기빈</div>
-                                        </div>
-                                        <div>
-                                           <div></div>
-                                           <div>ALP_</div>
-                                           <div>80</div>
-                                           <div>12.12</div>
-                                           <div>12.12</div>
-                                           <div></div>
-                                           <div></div>
-                                        </div>
-                                        <div>
-                                           <div></div>
-                                           <div>Total bilirubin_</div>
-                                           <div>0.03</div>
-                                           <div>12.12</div>
-                                           <div>12.12</div>
-                                           <div></div>
-                                           <div></div>
-                                        </div>
-                                        <div>
-                                           <div></div>
-                                           <div>r-GT-</div>
-                                           <div>8</div>
-                                           <div>12.12</div>
-                                           <div>12.12</div>
-                                           <div></div>
-                                           <div></div>
-                                        </div>
-                                        <div>
-                                           <div></div>
-                                           <div></div>
-                                           <div></div>
-                                           <div></div>
-                                           <div></div>
-                                           <div></div>
-                                           <div></div>
-                                        </div>
-                                        <div>
-                                           <div></div>
-                                           <div></div>
-                                           <div></div>
-                                           <div></div>
-                                           <div></div>
-                                           <div></div>
-                                           <div></div>
-                                        </div>
-                                        <div>
-                                           <div></div>
-                                           <div></div>
-                                           <div></div>
-                                           <div></div>
-                                           <div></div>
-                                           <div></div>
-                                           <div></div>
-                                        </div>
-                                        <div>
-                                           <div></div>
-                                           <div></div>
-                                           <div></div>
-                                           <div></div>
-                                           <div></div>
-                                           <div></div>
-                                           <div></div>
-                                        </div>
-                                        <div>
-                                           <div></div>
-                                           <div></div>
-                                           <div></div>
-                                           <div></div>
-                                           <div></div>
-                                           <div></div>
-                                           <div></div>
-                                        </div>
-                                        <div>
-                                           <div></div>
-                                           <div></div>
-                                           <div></div>
-                                           <div></div>
-                                           <div></div>
-                                           <div></div>
-                                           <div></div>
-                                        </div>
-                                        <div>
-                                           <div></div>
-                                           <div></div>
-                                           <div></div>
-                                           <div></div>
-                                           <div></div>
-                                           <div></div>
-                                           <div></div>
-                                        </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -758,8 +895,7 @@
                                     <textarea rows="4" style="resize:none;" class="opinion" placeholder="메모를 입력해주세요"></textarea>
                                 </div>
                                 <div class="submits">
-                                    <div class="check">검사하기</div>
-                                    <div class="submit">처방하기</div>
+                                    <div class="backDiag">진료화면 돌아가기</div>
                                 </div>
                             </div>
                         </div>
@@ -776,10 +912,8 @@
                                     </div>
                                     보고내역
                                 </div>
-                                <select style="height:3.7vh;">
-                                  <option value="recent">대분류</option>
-                                </select>
-                                <input type="text" style="height:3.3vh;" placeholder="검색어를 입력해주세요">
+                                <div></div>
+                                <div></div>
                                 <div></div>
                                 <div class="total">Total. 2</div>
                                 <div></div>
@@ -847,10 +981,8 @@
                                     </div>
                                     취급 마약류
                                 </div>
-                                <select style="height:3.7vh;">
-                                  <option value="recent">대분류</option>
-                                </select>
-                                <input type="text" style="height:3.3vh;" placeholder="검색어를 입력해주세요">
+                                <div></div>
+                                <div></div>
                                 <div></div>
                                 <div class="total">Total. 1</div>
                                 <div></div>
@@ -914,6 +1046,119 @@
                     </div>
                 </div>
                 <div class="vs-wrapper" id="memo">
+
+                     <script>
+                            var page_id;
+                            function allStock(jsons){
+                                $.ajax({
+                                    url : '/search_stock',
+                                    success : function(data){
+                                        let count = 0;
+                                        console.log(data);
+                                        $('#memo .content-table').empty();
+                                        for(key in data){
+                                            let type = "메모";
+                                            if(data[key]['STOCK_TYPE'] == 0)
+                                                type="수가";
+                                            else
+                                                type="메모";
+                                            var row = '<div class="content-row"><div>'+(count+1)+'</div><div>'+type+'</div><div>'+data[key]['STOCK_NAME']+'</div><div>'+data[key]['STOCK_PRICE']+'</div><div>'+data[key]['STOCK_TIME']+'</div><div data-title="'+data[key]['STOCK_NAME']+'" data-item="'+data[key]['STOCK_ID']+'" class="item-edit" style="display:none;display:grid;grid-column-gap: 5px;grid-template-columns: 1fr 1fr;"><div class="item-edit-btn">edit</div><div class="item-del">del</div></div></div>';
+                                            $('#memo .content-table').append(row);
+                                            console.log(data[key]);
+                                            count++;
+                                        }
+                                        $( "#memo .content-row, #memo .title" ).removeClass('edit');
+                                        $("#memo-edit").data("item", 0);
+                                        $("#memo-edit").html("편집");
+                                        $(".item-edit").hide();
+                                        $('#memo .total').html("Total. "+count);
+                                        for(let x = 0;x<12-count;x++){
+                                            var row = '<div class="content-row"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>';
+                                            $('#memo .content-table').append(row);
+                                        }
+
+                                    },
+                                    fail : function(){
+                                        alert("asdfasdfasdf");
+                                    },
+                                    type : 'post',
+                                    dataType: 'json',
+                                    data : jsons
+                                });
+                            }
+
+                             $(document).on('click','#memo .num',function(){
+                                $( "#memo .act" ).removeClass('act');
+                                $(this).addClass('act');
+                                $('.content-table').empty();
+                                $('#memo .content-table').empty();
+                                allStock({search : "", type : $('#memo-type').val(), num : $('#memo .act').data('item')});
+                            });
+                            $(document).ready(function() {
+                                allStock({search : "", type : $('#memo-type').val(), num : 0});
+                            });
+                            $(document).on('change','#memo-type',function () {
+                                allStock({search : "", type : $('#memo-type').val(), num : 0});
+                            });
+                            $(document).on('keyup', "#memo-search", function(e) {
+                                if(e.keyCode == 13){
+                                    allStock({search : $(this).val(), type : $('#memo-type').val(), num : 0});
+                                }
+                            });
+                            $(document).on('click', '#memo-add, .item-edit-btn', function(){
+                                var memoWindow;
+                                if($(this).hasClass("item-edit-btn")){
+                                    memoWindow = window.open("/memo?id="+$(this).closest("div.item-edit").data("item"), "popupWindow", "width=1000,height=630,scrollbars=no");
+                                }
+                                else{
+                                    memoWindow = window.open("/memo?id=0", "popupWindow", "width=1000,height=630,scrollbars=no");
+                                }
+
+                                if (typeof memoWindow.attachEvent != "undefined") {
+                                    memoWindow.attachEvent("onunload", function(){allStock({search : $("#memo-search").val(), type : $('#memo-type').val(), num : 0});});
+                                } else if (typeof memoWindow.addEventListener != "undefined") {
+                                    memoWindow.addEventListener("unload", function(){allStock({search : $("#memo-search").val(), type : $('#memo-type').val(), num : 0});}, false);
+                                }
+
+
+                            });
+                            $(document).on('click','#memo-edit',function(){
+                                if($(this).data("item") == 0){
+                                    $( "#memo .content-row, #memo .title" ).addClass('edit');
+                                    $(this).data("item", 1);
+                                    $(this).html("완료");
+                                    $(".item-edit").show();
+                                }
+                                else{
+                                    $( "#memo .content-row, #memo .title" ).removeClass('edit');
+                                    $(this).data("item", 0);
+                                    $(this).html("편집");
+                                    $(".item-edit").hide();
+                                }
+                            });
+                            $(document).on('click', '.item-del', function(){
+                                if(confirm("'" + $(this).closest("div.item-edit").data("title")+ "' 를 삭제하시겠습니까?")){
+                                var iid = $(this).closest("div.item-edit").data("item");
+                                $.ajax({
+                                    url : '/delete_stock',
+                                    success : function(data){
+
+                                        allStock({search : $("#memo-search").val(), type : $('#memo-type').val(), num : 0});
+                                    },
+                                    fail : function(){
+                                        alert("asdfasdfasdf");
+                                    },
+                                    type : 'post',
+                                    dataType: 'text',
+                                    data : {id : iid}
+                                });
+
+
+                                }
+                            });
+                    </script>
+
+
 				    <div class="vs-content">
                         <div class="content-container">
                             <div class="headers">
@@ -923,14 +1168,20 @@
                                     </div>
                                     수가/메모관리
                                 </div>
-                                <select style="height:3.7vh;">
-                                  <option value="recent">최근 저장순</option>
+                                <select style="height:3.7vh;" id="memo-type">
+                                  <option value="0">전체</option>
+                                  <option value="1">메모</option>
+                                  <option value="2">수가</option>
                                 </select>
-                                <input type="text" style="height:3.3vh;" placeholder="검색어를 입력해주세요">
+                                <input type="text" style="height:3.3vh;" placeholder="검색어와 엔터를 입력해주세요" id="memo-search">
                                 <div></div>
                                 <div class="total">Total. 0</div>
                                 <div></div>
-                                <div></div>
+                                <div style="height:3.3vh;display:grid;grid-column-gap: 5px;grid-template-columns: 1fr 1fr 1fr;color: #FFFFFF;font-size:1.64vh;font-weight:200;">
+                                    <div id="memo-add" style="background:#203B84;display:inline-flex;align-items: center;justify-content: center;">추가</div>
+                                    <div data-item="0" id="memo-edit" style="background:#7B7B7B;display:inline-flex;align-items: center;justify-content: center;">편집</div>
+
+                                </div>
                             </div>
                             <div class="content">
                                 <div class="title">
@@ -941,27 +1192,7 @@
                                     <div>저장 일자</div>
                                 </div>
                                 <div class="content-table">
-                                    <div class="content-row">
-                                        <div>1</div>
-                                        <div>메모</div>
-                                        <div>인사법</div>
-                                        <div>먼저 친절하게 웃으면서 안녕하세요?</div>
-                                        <div>2018-10-01</div>
-                                    </div>
-                                    <div class="content-row">
-                                        <div>2</div>
-                                        <div>수가</div>
-                                        <div>기본 진료비</div>
-                                        <div>12,000</div>
-                                        <div>2018-09-01</div>
-                                    </div>
-                                    <div class="content-row">
-                                        <div>3</div>
-                                        <div>수가</div>
-                                        <div>혈액검사</div>
-                                        <div>34,000</div>
-                                        <div>2018-09-01</div>
-                                    </div>
+
 
                                 </div>
 
