@@ -1,5 +1,6 @@
 from config import query
 from flask import Flask, request, session, redirect, render_template, url_for
+from werkzeug import secure_filename
 from flask_socketio import SocketIO, emit, join_room, leave_room
 import json
 import os
@@ -37,6 +38,15 @@ def getChatSearched():
     q = "SELECT * FROM `pet` join `chat_room` on pet.PET_ID = chat_room.PET_ID and pet.HOSPITAL_ID = chat_room.HOSPITAL_ID WHERE pet.HOSPITAL_ID = %s AND (pet.PET_NAME LIKE %s or pet.PET_PERSON LIKE %s)"
     result = query(q, True, False, True, hospt_id, "%{}%".format(search), "%{}%".format(search))
     return result if result else ""
+
+@app.route('/uploadImage', methods=['POST', 'GET'])
+def uploadImage():
+    file = request.files["lafamila"]
+    filename = file.filename.split("/")[-1]
+    filename = secure_filename(filename)
+    print(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    return os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
 @app.route('/chat', methods=['GET'])
 def chat():
@@ -326,6 +336,7 @@ def person():
 
 if __name__ == "__main__":
     app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
+    app.config['UPLOAD_FOLDER'] = "./static/picture/"
     # app.run(host="0.0.0.0", port=5000)
     # socket.run(app, port=5000, host='0.0.0.0')
     socket.run(app, debug=True)
