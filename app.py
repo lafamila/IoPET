@@ -5,7 +5,8 @@ from flask_socketio import SocketIO, emit, join_room, leave_room
 import json
 import os
 import copy
-
+from gensim.models.keyedvectors import KeyedVectors
+word2vec = KeyedVectors.load_word2vec_format('ko.bin', binary=False)
 app = Flask(__name__)
 socket = SocketIO(app)
 
@@ -266,6 +267,17 @@ def medicineID():
 def medicine():
     s = set()
     words1 = request.form.getlist('word1[]')
+    corpus = set()
+
+
+    for word in words1:
+        print(word2vec.most_similar(word))
+        for i in word2vec.most_similar(word):
+            corpus.add(i[0])
+        # print(word2vec.most_similar("('대통령','Noun')"))
+
+    words1 = corpus.union(words1)
+
     if len(words1) > 0:
         for word in words1:
             print(word)
