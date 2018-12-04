@@ -171,6 +171,29 @@
                             }
 
                         }
+                        else if($(".search-type").attr("data-item") == 1){
+                            if(word.length > 0){
+                                $.ajax({
+                                   url : '/search_symptom',
+                                    success : function(data){
+                                        $('.search-list').empty();
+                                        for(var i=0;i<data.length;i++){
+                                            var html = "<div class='searched-list'>"+data[i]+"</div>";
+                                            $('.search-list').append(html);
+                                        }
+                                    },
+                                    type : 'post',
+                                    dataType: 'json',
+                                    data : {search : word}
+                                });
+                            }
+                            else{
+                                $('.search-list').empty();
+                            }
+
+                        }
+
+
                         else if($(".search-type").attr("data-item") == 2){
                             if(word.length > 0){
                                 $.ajax({
@@ -215,17 +238,30 @@
             $(document).on('click','.searched-list',function(){
 
                 var result = $(this).html();
-                let iid = $(this).attr('data-item');
-                let recommend = $(this).attr('data-recommend');
-                //중복검사
-                if($(".search-type").attr("data-item") == 0){
-                    appendDisease(result, iid, recommend);
+                if($(".search-type").attr("data-item") != 1){
+                    let iid = $(this).attr('data-item');
+                    let recommend = $(this).attr('data-recommend');
+                    //중복검사
+                    if($(".search-type").attr("data-item") == 0){
+                        appendDisease(result, iid, recommend);
+                    }
+                    else if($(".search-type").attr("data-item") == 2){
+                        appendMedicine(result, iid);
+                    }
+                    $('#diag_search').val("");
+                    $('.search-list').empty();
                 }
-                else if($(".search-type").attr("data-item") == 2){
-                    appendMedicine(result, iid);
+                else{
+                    /*
+                    lafamila
+                    */
+                    $("#searched2").append("<div class='searched-result-list-item2' data-select='0'>"+result+"</span>");
+                    searchDisease();
+
+                    $('#diag_search').val("");
+                    $('.search-list').empty();
+
                 }
-                $('#diag_search').val("");
-                $('.search-list').empty();
             });
             $(document).on('mouseover','.searched-list',function(){
                 var currentColor = $(this).css('background-color');

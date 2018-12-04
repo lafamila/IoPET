@@ -6,9 +6,24 @@ import json
 import os
 import copy
 from gensim.models.keyedvectors import KeyedVectors
-word2vec = KeyedVectors.load_word2vec_format('ko.bin', binary=False)
+word2vec = KeyedVectors.load_word2vec_format('wiki.ko.vec', binary=False)
 app = Flask(__name__)
 socket = SocketIO(app)
+
+stop_words = ['은', '는', '이', '가', '에', '에서', '이다', '의']
+
+
+def similar_words(word):
+   result = []
+   words = word2vec.most_similar(word)
+   for word in words:
+      for stop in stop_words:
+         if stop in word[0]:
+            break
+      else:
+         result.append(word)
+
+   return result
 
 
 @app.route('/petLogin', methods=['POST'])
@@ -270,13 +285,6 @@ def medicine():
     corpus = set()
 
 
-    for word in words1:
-        print(word2vec.most_similar(word))
-        for i in word2vec.most_similar(word):
-            corpus.add(i[0])
-        # print(word2vec.most_similar("('대통령','Noun')"))
-
-    words1 = corpus.union(words1)
 
     if len(words1) > 0:
         for word in words1:
@@ -329,6 +337,18 @@ def searchDisease():
         return result
     return ""
 
+@app.route('/search_symptom', methods=['POST'])
+def searchSymptom():
+    word = request.form.get('search')
+    corpus = []
+    try:
+        for i in similar_words(word):
+            corpus.append(i[0])
+        return json.dumps(corpus)
+    except:
+        return ""
+
+
 @app.route('/search_medicine', methods=['POST'])
 def searchMedicine():
     word = request.form.get('search')
@@ -343,6 +363,8 @@ def searchMedicine():
 def disease():
     s = set()
     words2 = request.form.getlist('word2[]')
+
+
     if len(words2) > 0:
         for word in words2:
             result = query("SELECT * FROM disease_symptom WHERE `SYMPTOME_NAME` LIKE %s", True, False, False,
