@@ -6,24 +6,67 @@ import json
 import os
 import copy
 from gensim.models.keyedvectors import KeyedVectors
-word2vec = KeyedVectors.load_word2vec_format('wiki.ko.vec', binary=False)
 app = Flask(__name__)
 socket = SocketIO(app)
 
+
+
 stop_words = ['은', '는', '이', '가', '에', '에서', '이다', '의']
 
+@app.route('/petJoin', methods=['POST'])
+def petJoin():
+    user_id = request.form.get("id")
+    user_pw = request.form.get("pw")
+    pet = request.form.get("pet")
+    name = request.form.get("name")
+    phone = request.form.get("phone")
+    hospital = request.form.get("hospital")
 
-def similar_words(word):
-   result = []
-   words = word2vec.most_similar(word)
-   for word in words:
-      for stop in stop_words:
-         if stop in word[0]:
-            break
-      else:
-         result.append(word)
+    if "-" not in phone:
+        st = 0
+        ed = len(phone) % 4
+        result = []
+        while ed < len(phone):
+            result.append(phone[st:ed])
+            st = ed
+            ed += 4
+        result.append(phone[st:ed])
+        phone = "-".join(result)
+    print(phone)
+    q = "SELECT PET_ID FROM `pet` WHERE PET_NAME = %s AND PET_PERSON = %s AND PET_CONTACT = %s AND HOSPITAL_ID = %s"
+    result = query(q, True, True, False, pet, name, phone, hospital)
+    if not result:
+        return "pet"
 
-   return result
+
+    pet_id = result["PET_ID"]
+
+
+    q = "SELECT * FROM `user` WHERE PET_ID = %s"
+    result = query(q, True, True, False, pet_id)
+    if not result:
+        return "already"
+
+
+    q = "INSERT INTO `user` VALUES (%s, %s, %s)"
+    try:
+        diag_id = query(q, False, False, False, user_id, user_pw, pet_id)
+    except:
+        return "already"
+    return pet_id
+
+@app.route('/petLoginApp', methods=['POST'])
+def petLoginAPP():
+    user_id = request.form.get("id")
+    user_pw = request.form.get("pw")
+
+    q = "SELECT * FROM `user` WHERE USER_ID = %s AND USER_PW = %s"
+    result = query(q, True, True, False, user_id, user_pw)
+    if not result:
+
+        return "error"
+    pet_id = result["PET_ID"]
+    return pet_id
 
 
 @app.route('/petLogin', methods=['POST'])
