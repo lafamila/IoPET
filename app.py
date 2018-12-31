@@ -40,13 +40,13 @@ def petJoin():
 
 
     pet_id = result["PET_ID"]
-
+    print(pet_id)
 
     q = "SELECT * FROM `user` WHERE PET_ID = %s"
     result = query(q, True, True, False, pet_id)
-    if not result:
+    if result:
         return "already"
-
+    print(pet_id)
 
     q = "INSERT INTO `user` VALUES (%s, %s, %s)"
     try:
