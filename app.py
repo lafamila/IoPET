@@ -5,13 +5,11 @@ from flask_socketio import SocketIO, emit, join_room, leave_room
 import json
 import os
 import copy
-from gensim.models.keyedvectors import KeyedVectors
 app = Flask(__name__)
 socket = SocketIO(app)
 
 
 
-stop_words = ['은', '는', '이', '가', '에', '에서', '이다', '의']
 
 @app.route('/petJoin', methods=['POST'])
 def petJoin():
