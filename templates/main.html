@@ -325,7 +325,6 @@
                 searchMedicine();
             });
             $(document).on('dblclick','.medicine-categorys',function(){
-                alert($(this).data('id'));
                 var $div = $('<div/>');
                 var idArr1 = [];
                 var list1 = $(".medi-name-cell");
@@ -1273,14 +1272,18 @@
                                               case '3': sex = 'CM'; break;
                                               default: sex = '?'; break;
                                             }
-                                            var row = '<div class="content-row"><div>'+(count+1)+'</div><div>'+data[key]['PET_PERSON']+'</div><div>'+data[key]['PET_NAME']+'</div><div>'+data[key]['PET_SPEC']+'</div><div>'+sex+'</div><div>'+data[key]['PET_AGE']+'</div><div>'+data[key]['DIAGN_NAME']+'</div><div>'+data[key]['DIAGN_DATE'].split(' ')[0]+'</div></div>';
+                                            var adms = 'N';
+                                            if(data[key]['DIAGN_NAME']==1){
+                                                adms = 'Y';
+                                            }
+                                            var row = '<div class="content-row"><div>'+(count+1)+'</div><div>'+data[key]['PET_PERSON']+'</div><div>'+data[key]['PET_NAME']+'</div><div>'+data[key]['PET_SPEC']+'</div><div>'+sex+'</div><div>'+data[key]['PET_AGE']+'</div><div>'+data[key]['DIAGN_NAME']+'</div><div>'+adms+'</div><div>'+data[key]['DIAGN_DATE'].split(' ')[0]+'</div></div>';
                                             $('#person .content-table').append(row);
                                             console.log(data[key]);
                                             count++;
                                         }
                                         $('#person .total').html("Total. "+count);
                                         for(let x = 0;x<12-count;x++){
-                                            var row = '<div class="content-row"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>';
+                                            var row = '<div class="content-row"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>';
                                             $('#person .content-table').append(row);
                                         }
 
@@ -1298,12 +1301,17 @@
                                 $(this).addClass('act');
                                 $('.content-table').empty();
 
-                                allPerson({hospt_id : "{{hospt_id}}", page : $('#person .act').data('item')});
+                                allPerson({hospt_id : "{{hospt_id}}", page : $('#person .act').data('item'), ltype : $('#listType').val()});
+                            });
+                            $(document).on('change','#listType',function(){
+                                $('.content-table').empty();
+
+                                allPerson({hospt_id : "{{hospt_id}}", page : $('#person .act').data('item'), ltype : $('#listType').val()});
                             });
                             $(document).ready(function() {
                                 $('#person .content-table').empty();
 
-                                allPerson({hospt_id : "{{hospt_id}}", page : $('#person .act').data('item'), num : 'all'});
+                                allPerson({hospt_id : "{{hospt_id}}", page : $('#person .act').data('item'), num : 'all', ltype : $('#listType').val()});
 
                             });
 
@@ -1319,8 +1327,9 @@
                                     </div>
                                     보호자관리
                                 </div>
-                                <select style="height:3.7vh;">
+                                <select style="height:3.7vh;" id="listType">
                                   <option value="recent">최근 방문순</option>
+                                  <option value="in">입원</option>
                                 </select>
                                 <input type="text" style="height:3.3vh;" placeholder="검색어를 입력해주세요">
                                 <div></div>
@@ -1337,6 +1346,7 @@
                                     <div>성 &nbsp; 별</div>
                                     <div>나 &nbsp; 이 (Y)</div>
                                     <div>질병 기록</div>
+                                    <div>입원 여부</div>
                                     <div>최근 방문일자</div>
                                 </div>
                                 <div class="content-table">

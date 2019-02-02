@@ -18,6 +18,9 @@ def query(q, isResult, isOne, isJson, *data):
         else:
             for row in rows:
                 for k, v in row.items():
+                    if type(v) == type(bytes(1)):
+                        v = int(v)
+
                     if type(v) != type(1) or type(v) != type('1'):
                         row[k] = str(v)
 

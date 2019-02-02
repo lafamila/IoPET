@@ -1,6 +1,5 @@
 from config import query
 from flask import Flask, request, session, redirect, render_template, url_for
-from werkzeug import secure_filename
 from flask_socketio import SocketIO, emit, join_room, leave_room
 import json
 import os
@@ -214,7 +213,11 @@ def allPerson():
     elif type(page) != type(1):
         page = int(page) - 1
     page = page * 12
-    q = "SELECT * FROM `diagnosis` a, `pet` b WHERE a.`HOSPITAL_ID` = %s AND b.`HOSPITAL_ID` = %s AND b.`PET_ID` = a.`PET_ID` ORDER BY `DIAGN_DATE` DESC LIMIT  %s, 12"
+
+    if request.form.get('ltype') == "in":
+        q = "SELECT * FROM `diagnosis` a, `pet` b WHERE a.`HOSPITAL_ID` = %s AND b.`HOSPITAL_ID` = %s AND b.`PET_ID` = a.`PET_ID` AND b.`PET_ADMS`=1 ORDER BY `DIAGN_DATE` DESC LIMIT  %s, 12"
+    else:
+        q = "SELECT * FROM `diagnosis` a, `pet` b WHERE a.`HOSPITAL_ID` = %s AND b.`HOSPITAL_ID` = %s AND b.`PET_ID` = a.`PET_ID` ORDER BY `DIAGN_DATE` DESC LIMIT  %s, 12"
     diags = query(q, True, False, False, hospt_id, hospt_id, page)
     if diags:
         # if request.form.get('num'):
@@ -469,5 +472,5 @@ if __name__ == "__main__":
     app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
     app.config['UPLOAD_FOLDER'] = "./static/picture/"
     # app.run(host="0.0.0.0", port=5000)
-    # socket.run(app, port=5000, host='0.0.0.0')
-    socket.run(app, debug=True)
+    socket.run(app, port=5000, host='0.0.0.0')
+    # socket.run(app, debug=True)

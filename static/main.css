@@ -641,7 +641,7 @@ textarea, select, input, button { outline: none; }
 }
 #person .content-row, #person .title{
     display:grid;
-    grid-template-columns: 100fr 250fr 250fr 350fr 200fr 200fr 500fr 350fr;
+    grid-template-columns: 100fr 250fr 250fr 350fr 200fr 200fr 300fr 200fr 350fr;
     color: #3E3E3E;
 }
 #memo .content-row, #memo .title{

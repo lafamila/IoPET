@@ -176,20 +176,29 @@
 
 				});
 				$("#myMessage").on("keyup", function(e){
+						if($('#myMessage').val().length > 0){
+							$('#sendButton').css('background-color', '#5C74B7');
+						}
+						else{
+							$('#sendButton').css('background-color', '#CECECE');
+						}
 					setTimeout(function(){
+
 						if(e.keyCode == 13){
-						if($('.selected').length > 0){
-						//var $div = $("<div/>").html($('#myMessage').val());
-						//$div.addClass("send");
-						//$(".chat-message").append($div);
+							if($('.selected').length > 0){
+								//var $div = $("<div/>").html($('#myMessage').val());
+								//$div.addClass("send");
+								//$(".chat-message").append($div);
 
-						socket.emit('message', {message : $('#myMessage').val(), room_id: $('.selected').data('room'), type : 'text', sender : 'hospt'});
-						$('#myMessage').val('');
+								socket.emit('message', {message : $('#myMessage').val(), room_id: $('.selected').data('room'), type : 'text', sender : 'hospt'});
+								$('#myMessage').val('');
 
-					}
+							}
 
 						}
+
 					}, 500);
+
 				});
 				$("#search").on('keyup', function(e) {
 							setTimeout(function() {
@@ -302,7 +311,13 @@
 				<div class="chat-insert">
 					<textarea id="myMessage" placeholder="메세지를 입력하세요."></textarea>
 					<div class="sendButton-container">
-						<div id="sendButton"></div>
+						<div id="sendButton" style="display: flex; align-items: center;">
+							<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+width="52" height="52"
+viewBox="0 0 224 224"
+style=" fill:#000000;margin:auto;"><g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><path d="M0,224v-224h224v224z" fill="none"></path><g fill="#ffffff"><g id="surface1"><path d="M214.57692,0c-1.14423,0.13462 -2.22115,0.50481 -3.23077,1.07692l-206.76923,112c-2.99519,1.64904 -4.71154,4.94712 -4.34135,8.34615c0.33654,3.39904 2.69231,6.25962 5.95673,7.26923l54.92308,16.42308c1.27885,10.16347 7,54.14904 8.07692,62.73077c1.07692,8.54808 6.86538,10.02885 12.65385,2.15385c3.90385,-5.3173 26.92308,-37.69231 26.92308,-37.69231l49,49c2.15385,2.15385 5.28365,2.99519 8.21154,2.22116c2.96154,-0.77404 5.25,-3.0625 6.05769,-5.99039l51.69231,-206.76923c0.77404,-2.72596 0.10096,-5.65385 -1.71635,-7.80769c-1.85096,-2.15385 -4.61057,-3.26442 -7.4375,-2.96154zM202.19231,25.30769l-43.34615,173.38462l-48.73077,-48.73077l70.80769,-98.26923l-110.11538,78.61538l-40.11538,-11.84615z"></path></g></g></g></svg>
+
+						</div>
 					</div>
 				</div>
 			</div>
