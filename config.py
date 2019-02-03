@@ -20,7 +20,10 @@ def query(q, isResult, isOne, isJson, *data):
                 for k, v in row.items():
                     if type(v) == type(bytes(1)):
                         v = int(v)
-
+                    import sys
+                    if sys.version_info[0] < 3:
+                        if type(v) == type(unicode('x')):
+                            v = v.encode('utf-8')
                     if type(v) != type(1) or type(v) != type('1'):
                         row[k] = str(v)
 

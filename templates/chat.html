@@ -295,7 +295,7 @@
 
 					<div class='person {% if data["ROOM_ID"] == room_id %} selected {% elif data["NEW"] == True %} new{% else %} {% endif %}' data-id='{{data["PET_ID"]}}' data-room='{{data["ROOM_ID"]}}'>
 						<div class="new-circle"></div>
-						<div class="circle">{{data["PET_NAME"][0]}}</div>
+						<div class="circle">{{data["PET_NAME"].decode('utf-8')[0]}}</div>
 						<div class="information">
 							<div class="information-name">{{data["PET_PERSON"]}} ({{data["PET_NAME"]}})</div>
 							<div class="information-preview">{{data["LAST"]}}</div>

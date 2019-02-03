@@ -1273,7 +1273,7 @@
                                               default: sex = '?'; break;
                                             }
                                             var adms = 'N';
-                                            if(data[key]['DIAGN_NAME']==1){
+                                            if(data[key]['PET_ADMS']=="1"){
                                                 adms = 'Y';
                                             }
                                             var row = '<div class="content-row"><div>'+(count+1)+'</div><div>'+data[key]['PET_PERSON']+'</div><div>'+data[key]['PET_NAME']+'</div><div>'+data[key]['PET_SPEC']+'</div><div>'+sex+'</div><div>'+data[key]['PET_AGE']+'</div><div>'+data[key]['DIAGN_NAME']+'</div><div>'+adms+'</div><div>'+data[key]['DIAGN_DATE'].split(' ')[0]+'</div></div>';

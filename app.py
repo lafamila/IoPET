@@ -5,10 +5,122 @@ import json
 import os
 import copy
 app = Flask(__name__)
+
+app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
+app.config['UPLOAD_FOLDER'] = "./static/picture/"
+app.config['SESSION_TYPE'] = 'filesystem'
+
 socket = SocketIO(app)
+import colorsys
+from PIL import Image
+from math import *
+
+TYPE1 = [2, 0, 3, 5, 4, 4, 3, 1, 3]
+TYPE2 = [4, 0, 2, 2, 2, 3, 3, 3, 3]
+TYPE3 = [3, 1, 4, 2, 1, 4, 3, 3, 3]
+TYPE4 = [0, 2, 3, 5, 4, 1, 1, 3, 3]
+TYPE5 = [1, 4, 0, 3, 4, 1, 1, 1, 3]
+TYPES = [TYPE1, TYPE2, TYPE3, TYPE4, TYPE5]
 
 
+def getHSV(img):
+    h, s, v = 0, 0, 0
+    for i in range(22, 32):
+        for j in range(22, 32):
+            rr, gg, bb = img.getpixel((i, j))
+            hh, ss, vv = colorsys.rgb_to_hsv(rr / 255., gg / 255., bb / 255.)
+            h += hh
+            s += ss
+            v += vv
+    h = h / 100
+    s = s / 100
+    v = v / 100
+    return 100 * h, 100 * s, 100 * v
 
+
+def getCropped(name):
+    img = Image.open(name)
+
+    area = (900, 100, 3132, 2924)
+    crop = img.crop(area)
+
+    p = 165
+    sx = 150
+    sy = 585
+    ty = 55
+    # blank = (tx+p)/2 + 15
+    col = []
+
+    for j in range(9):
+        row = []
+        for i in range(3):
+            row.append(crop.crop((sx, sy, sx + p, sy + p)).crop((p / 3, p / 3, 2 * p / 3, 2 * p / 3)))
+            sx = sx + p + tx
+
+        sx = sx + 2 * p
+        for i in range(3):
+            row.append(crop.crop((sx, sy, sx + p, sy + p)).crop((p / 3, p / 3, 2 * p / 3, 2 * p / 3)))
+            sx = sx + p + tx
+
+        col.append(row)
+        sx = 150
+        sy = sy + p + ty
+    return col
+
+
+def getCenter(name):
+    img = Image.open(name)
+
+    area = (1984, 265, 2098, 2924)
+    crop = img.crop(area)
+    col = []
+    sy = 0
+    for i in range(9):
+        col.append(crop.crop((0, sy, 114, sy + 171)))
+        sy += 251
+    return col
+
+
+def getCode(res, col):
+    code = []
+    for i in range(9):
+        diff = []
+        for j in range(6):
+            diff.append(abs(getHSV(res[i])[0] - getHSV(col[i][j])[0]))
+
+        code.append(diff.index(min(diff)))
+    return code
+
+
+def square_rooted(x):
+    return round(sqrt(sum([a * a for a in x])), 3)
+
+
+def cosine_similarity(x, y):
+    numerator = sum(a * b for a, b in zip(x, y))
+    denominator = square_rooted(x) * square_rooted(y)
+    return round(numerator / float(denominator), 3)
+
+
+def getType(x):
+    res = []
+    for t in TYPES:
+        res.append(cosine_similarity(x, t))
+    return res.index(max(res))
+
+
+@app.route('/petType', methods=['POST'])
+def petType():
+
+    file = request.files["lafamila"]
+    filename = "tmp"
+    print(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    name = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    col = getCropped(name)
+    res = getCenter(name)
+    x = getCode(res, col)
+    return x
 
 @app.route('/petJoin', methods=['POST'])
 def petJoin():
@@ -469,8 +581,6 @@ def person():
 
 
 if __name__ == "__main__":
-    app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
-    app.config['UPLOAD_FOLDER'] = "./static/picture/"
     # app.run(host="0.0.0.0", port=5000)
     socket.run(app, port=5000, host='0.0.0.0')
     # socket.run(app, debug=True)
