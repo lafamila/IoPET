@@ -135,7 +135,12 @@
 						url : '/chatList',
 						success : function(data){
 							for(var i=0;i<data.length;i++){
-								var $div = $("<div/>").html(data[i].CHAT_MESSAGE);
+								if(data[i].CHAT_TYPE == 0){
+									var $div = $("<div/>").html(data[i].CHAT_MESSAGE);
+								}
+								else{
+									var $div = $("<div/>").css('width','120px').css('height', 'auto').css('background-color', 'white').append($("<img/>").attr("src", data[i].CHAT_MESSAGE).css('max-width', '100%').css('height','auto'));
+								}
 								if(data[i].CHAT_SEND == 0){
 									$div.addClass("send");
 								}
