@@ -1299,7 +1299,6 @@
                             $(document).on('keyup', "#person-search", function(e) {
                                 if(e.keyCode == 13){
                                     $('#person .content-table').empty();
-                                    $('#person-search').val('');
 
                                     allPerson({hospt_id : "{{hospt_id}}", page : $('#person .act').data('item'), ltype : $('#listType').val(), search: $(this).val()});
                                 }

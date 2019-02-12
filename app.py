@@ -327,13 +327,17 @@ def allPerson():
 
     qs = ""
     if search is not None:
-        qs = "b.`PET_NAME` = '{}' AND ".format(search)
+        qs = "b.`PET_NAME` = %s AND "
     print(qs)
+    print(search)
     if request.form.get('ltype') == "in":
         q = "SELECT * FROM `diagnosis` a, `pet` b WHERE "+qs+"a.`HOSPITAL_ID` = %s AND b.`HOSPITAL_ID` = %s AND b.`PET_ID` = a.`PET_ID` AND b.`PET_ADMS`=1 ORDER BY `DIAGN_DATE` DESC LIMIT  %s, 12"
     else:
         q = "SELECT * FROM `diagnosis` a, `pet` b WHERE "+qs+"a.`HOSPITAL_ID` = %s AND b.`HOSPITAL_ID` = %s AND b.`PET_ID` = a.`PET_ID` ORDER BY `DIAGN_DATE` DESC LIMIT  %s, 12"
-    diags = query(q, True, False, False, hospt_id, hospt_id, page)
+    if search is not None:
+        diags = query(q, True, False, False, search, hospt_id, hospt_id, page)
+    else:
+        diags = query(q, True, False, False, hospt_id, hospt_id, page)
     if diags:
         # if request.form.get('num'):
         #     size = len(query("SELECT * FROM `diagnosis` WHERE `HOSPITAL_ID` = %s", True, False, False, hospt_id))
