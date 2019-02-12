@@ -662,6 +662,9 @@ textarea, select, input, button { outline: none; }
     grid-template-columns: 100fr 250fr 250fr 350fr 200fr 250fr 200fr 300fr;
     color: #3E3E3E;
 }
+#medicines .content-row, #medicines .content-row2{
+    font-size: 1.4vh;
+}
 #medicines .content-row2, #medicines .title-2{
     display:grid;
     grid-template-columns: 100fr 600fr 150fr 160fr 240fr 200fr 220fr 200fr 210fr 280fr 250fr 260fr 290fr 300fr;

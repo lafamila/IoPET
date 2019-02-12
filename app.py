@@ -48,6 +48,7 @@ def getCropped(name):
     sx = 150
     sy = 585
     ty = 55
+    tx = 75
     # blank = (tx+p)/2 + 15
     col = []
 
@@ -141,7 +142,6 @@ def petJoin():
             ed += 4
         result.append(phone[st:ed])
         phone = "-".join(result)
-    print(phone)
     q = "SELECT PET_ID FROM `pet` WHERE PET_NAME = %s AND PET_PERSON = %s AND PET_CONTACT = %s AND HOSPITAL_ID = %s"
     result = query(q, True, True, False, pet, name, phone, hospital)
     if not result:
@@ -149,13 +149,11 @@ def petJoin():
 
 
     pet_id = result["PET_ID"]
-    print(pet_id)
 
     q = "SELECT * FROM `user` WHERE PET_ID = %s"
     result = query(q, True, True, False, pet_id)
     if result:
         return "already"
-    print(pet_id)
 
     q = "INSERT INTO `user` VALUES (%s, %s, %s)"
     try:
@@ -320,16 +318,21 @@ def personal():
 def allPerson():
     hospt_id = request.form.get('hospt_id')
     page = request.form.get('page')
+    search = request.form.get('search')
     if page is None:
         page = 0
     elif type(page) != type(1):
         page = int(page) - 1
     page = page * 12
 
+    qs = ""
+    if search is not None:
+        qs = "b.`PET_NAME` = '{}' AND ".format(search)
+    print(qs)
     if request.form.get('ltype') == "in":
-        q = "SELECT * FROM `diagnosis` a, `pet` b WHERE a.`HOSPITAL_ID` = %s AND b.`HOSPITAL_ID` = %s AND b.`PET_ID` = a.`PET_ID` AND b.`PET_ADMS`=1 ORDER BY `DIAGN_DATE` DESC LIMIT  %s, 12"
+        q = "SELECT * FROM `diagnosis` a, `pet` b WHERE "+qs+"a.`HOSPITAL_ID` = %s AND b.`HOSPITAL_ID` = %s AND b.`PET_ID` = a.`PET_ID` AND b.`PET_ADMS`=1 ORDER BY `DIAGN_DATE` DESC LIMIT  %s, 12"
     else:
-        q = "SELECT * FROM `diagnosis` a, `pet` b WHERE a.`HOSPITAL_ID` = %s AND b.`HOSPITAL_ID` = %s AND b.`PET_ID` = a.`PET_ID` ORDER BY `DIAGN_DATE` DESC LIMIT  %s, 12"
+        q = "SELECT * FROM `diagnosis` a, `pet` b WHERE "+qs+"a.`HOSPITAL_ID` = %s AND b.`HOSPITAL_ID` = %s AND b.`PET_ID` = a.`PET_ID` ORDER BY `DIAGN_DATE` DESC LIMIT  %s, 12"
     diags = query(q, True, False, False, hospt_id, hospt_id, page)
     if diags:
         # if request.form.get('num'):
@@ -387,11 +390,6 @@ def updateMemo():
     type = request.form.get("type")
     content = request.form.get("content")
     q = "UPDATE `stock` SET `STOCK_TYPE`=%s, `STOCK_NAME`=%s, `STOCK_PRICE`=%s, `STOCK_TIME`=DATE(NOW()) WHERE `STOCK_ID`=%s"
-    print(q)
-    print(iid)
-    print(title)
-    print(type)
-    print(content)
 
     diag_id = query(q, False, False, False, type, title, content, iid)
     return ""
@@ -444,7 +442,6 @@ def medicine():
 
     if len(words1) > 0:
         for word in words1:
-            print(word)
             result = query("SELECT * FROM disease_medicine WHERE `DISEASE_ID` = %s", True, False, False, word)
             if result:
                 if len(s) > 0:
@@ -582,5 +579,6 @@ def person():
 
 if __name__ == "__main__":
     # app.run(host="0.0.0.0", port=5000)
+    # socket.run(app, port=5000, host='127.0.0.1')
     socket.run(app, port=5000, host='0.0.0.0')
     # socket.run(app, debug=True)

@@ -1276,7 +1276,7 @@
                                             if(data[key]['PET_ADMS']=="1"){
                                                 adms = 'Y';
                                             }
-                                            var row = '<div class="content-row"><div>'+(count+1)+'</div><div>'+data[key]['PET_PERSON']+'</div><div>'+data[key]['PET_NAME']+'</div><div>'+data[key]['PET_SPEC']+'</div><div>'+sex+'</div><div>'+data[key]['PET_AGE']+'</div><div>'+data[key]['DIAGN_NAME']+'</div><div>'+adms+'</div><div>'+data[key]['DIAGN_DATE'].split(' ')[0]+'</div></div>';
+                                            var row = '<div class="content-row" data-item="'+data[key]['PET_ID']+'"><div>'+(count+1)+'</div><div>'+data[key]['PET_PERSON']+'</div><div>'+data[key]['PET_NAME']+'</div><div>'+data[key]['PET_SPEC']+'</div><div>'+sex+'</div><div>'+data[key]['PET_AGE']+'</div><div>'+data[key]['DIAGN_NAME']+'</div><div>'+adms+'</div><div>'+data[key]['DIAGN_DATE'].split(' ')[0]+'</div></div>';
                                             $('#person .content-table').append(row);
                                             console.log(data[key]);
                                             count++;
@@ -1296,25 +1296,40 @@
                                     data : jsons
                                 });
                             }
+                            $(document).on('keyup', "#person-search", function(e) {
+                                if(e.keyCode == 13){
+                                    $('#person .content-table').empty();
+                                    $('#person-search').val('');
+
+                                    allPerson({hospt_id : "{{hospt_id}}", page : $('#person .act').data('item'), ltype : $('#listType').val(), search: $(this).val()});
+                                }
+                            });
+
                             $(document).on('click','#person .num',function(){
                                 $( "#person .act" ).removeClass('act');
                                 $(this).addClass('act');
-                                $('.content-table').empty();
-
+                                $('#person .content-table').empty();
+                                $('#person-search').val('');
                                 allPerson({hospt_id : "{{hospt_id}}", page : $('#person .act').data('item'), ltype : $('#listType').val()});
                             });
                             $(document).on('change','#listType',function(){
-                                $('.content-table').empty();
+                                $('#person .content-table').empty();
+                                $('#person-search').val('');
 
                                 allPerson({hospt_id : "{{hospt_id}}", page : $('#person .act').data('item'), ltype : $('#listType').val()});
                             });
                             $(document).ready(function() {
                                 $('#person .content-table').empty();
+                                $('#person-search').val('');
 
                                 allPerson({hospt_id : "{{hospt_id}}", page : $('#person .act').data('item'), num : 'all', ltype : $('#listType').val()});
 
                             });
-
+                            $(document).on('dblclick','#person .content-row',function(){
+                                if(confirm('데이터를 보시겠습니까?')){
+                                    location.href = "/main?pet="+$(this).data('item');
+                                }
+                            });
                     </script>
 
 
@@ -1331,7 +1346,7 @@
                                   <option value="recent">최근 방문순</option>
                                   <option value="in">입원</option>
                                 </select>
-                                <input type="text" style="height:3.3vh;" placeholder="검색어를 입력해주세요">
+                                <input type="text" style="height:3.3vh;" placeholder="검색어와 엔터를 입력해주세요" id="person-search">
                                 <div></div>
                                 <div class="total">Total. 0</div>
                                 <div></div>
