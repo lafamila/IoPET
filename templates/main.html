@@ -369,11 +369,15 @@
                     arr.push($(this).val());
                 });
                 var name = arr.join(", ");
+                var op = "";
+                $.each($(".opinion"), function(){
+                    op += $(this).val();
+                });
                 $.ajax({
                     type: "POST",
                     url: "/insert_diagn",
                     dataType: 'json',
-                    data: { DIAGN_NAME: name, DIAGN_OPINION: $(".diagnosis").val()+"\n"+$(".opinion").val(), DIAGN_PRICE:$(".stock-price").html().replace(",",""), HOSPITAL_ID: {{hospt_id}}, PET_ID: {{pet_id}} }, 
+                    data: { DIAGN_NAME: name, DIAGN_OPINION: $(".diagnosis").val()+"\n"+op, DIAGN_PRICE:$(".stock-price").html().replace(",",""), HOSPITAL_ID: {{hospt_id}}, PET_ID: {{pet_id}} },
                     complete: function(data){
                         //window.location.reload(true);
 			setTimeout(function(){// wait for 5 secs(2)
