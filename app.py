@@ -125,12 +125,12 @@ def petType():
 
 @app.route('/petJoin', methods=['POST'])
 def petJoin():
-    user_id = request.form.get("id")
-    user_pw = request.form.get("pw")
-    pet = request.form.get("pet")
-    name = request.form.get("name")
-    phone = request.form.get("phone")
-    hospital = request.form.get("hospital")
+    user_id = request.form.get("id").encode('utf-8')
+    user_pw = request.form.get("pw").encode('utf-8')
+    pet = request.form.get("pet").encode('utf-8')
+    name = request.form.get("name").encode('utf-8')
+    phone = request.form.get("phone").encode('utf-8')
+    hospital = request.form.get("hospital").encode('utf-8')
 
     if "-" not in phone:
         st = 0
@@ -164,8 +164,8 @@ def petJoin():
 
 @app.route('/petLoginApp', methods=['POST'])
 def petLoginAPP():
-    user_id = request.form.get("id")
-    user_pw = request.form.get("pw")
+    user_id = request.form.get("id").encode('utf-8')
+    user_pw = request.form.get("pw").encode('utf-8')
 
     q = "SELECT * FROM `user` WHERE USER_ID = %s AND USER_PW = %s"
     result = query(q, True, True, False, user_id, user_pw)
@@ -200,7 +200,7 @@ def getChat():
 @app.route('/chat_search', methods=['POST'])
 def getChatSearched():
     hospt_id = session["hospital_id"]
-    search = request.form.get('keyword')
+    search = request.form.get('keyword').encode('utf-8')
     q = "SELECT * FROM `pet` join `chat_room` on pet.PET_ID = chat_room.PET_ID and pet.HOSPITAL_ID = chat_room.HOSPITAL_ID WHERE pet.HOSPITAL_ID = %s AND (pet.PET_NAME LIKE %s or pet.PET_PERSON LIKE %s)"
     result = query(q, True, False, True, hospt_id, "%{}%".format(search), "%{}%".format(search))
     return result if result else ""
@@ -286,8 +286,8 @@ def message(data):
 
 @app.route('/login', methods=['POST'])
 def login():
-    user_id = request.form.get('username')
-    user_pw = request.form.get('password')
+    user_id = request.form.get('username').encode('utf-8')
+    user_pw = request.form.get('password').encode('utf-8')
     q = "SELECT * FROM `hospital` WHERE `HOSPITAL_USER_ID` = %s AND `HOSPITAL_USER_PW` = %s"
     data = query(q, True, True, False, user_id, user_pw)
     if data:
@@ -318,7 +318,7 @@ def personal():
 def allPerson():
     hospt_id = request.form.get('hospt_id')
     page = request.form.get('page')
-    search = request.form.get('search')
+    search = request.form.get('search').encode('utf-8')
     if page is None:
         page = 0
     elif type(page) != type(1):
@@ -379,9 +379,9 @@ def index():
 
 @app.route('/insert_memo', methods=['POST'])
 def insertMemo():
-    title = request.form.get("title")
-    type = request.form.get("type")
-    content = request.form.get("content")
+    title = request.form.get("title").encode('utf-8')
+    type = request.form.get("type").encode('utf-8')
+    content = request.form.get("content").encode('utf-8')
     q = "INSERT INTO `stock`(`STOCK_TYPE`, `STOCK_NAME`, `STOCK_PRICE`, `STOCK_TIME`) VALUES (%s, %s, %s, DATE(NOW()))"
     diag_id = query(q, False, False, False, type, title, content)
     return ""
@@ -390,9 +390,9 @@ def insertMemo():
 @app.route('/update_memo', methods=['POST'])
 def updateMemo():
     iid = request.form.get("iid")
-    title = request.form.get("title")
-    type = request.form.get("type")
-    content = request.form.get("content")
+    title = request.form.get("title").encode('utf-8')
+    type = request.form.get("type").encode('utf-8')
+    content = request.form.get("content").encode('utf-8')
     q = "UPDATE `stock` SET `STOCK_TYPE`=%s, `STOCK_NAME`=%s, `STOCK_PRICE`=%s, `STOCK_TIME`=DATE(NOW()) WHERE `STOCK_ID`=%s"
 
     diag_id = query(q, False, False, False, type, title, content, iid)
@@ -404,7 +404,7 @@ def insertDiagn():
     vs = []
     for k in request.form:
         ks.append("`" + k + "`")
-        vs.append(request.form.get(k))
+        vs.append(request.form.get(k).encode('utf-8'))
     ks.append("`DIAGN_DATE`")
     ks = ",".join(ks)
     q = "INSERT INTO `diagnosis`({}) VALUES (%s, %s, %s, %s, %s, NOW())".format(ks)
@@ -417,7 +417,7 @@ def insertPet():
     vs = []
     for k in request.form:
         ks.append("`" + k + "`")
-        vs.append(request.form.get(k))
+        vs.append(request.form.get(k).encode('utf-8'))
     ks = ",".join(ks)
     q = "INSERT INTO `pet`({}) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(ks)
     pet_id = query(q, False, False, False, *tuple(vs))
@@ -440,6 +440,7 @@ def medicineID():
 def medicine():
     s = set()
     words1 = request.form.getlist('word1[]')
+    words1 = [w.encode('utf-8') for w in words1]
     corpus = set()
 
 
@@ -464,7 +465,9 @@ def medicine():
 @app.route('/search_stock', methods=['POST'])
 def searchStock():
     word = request.form.get('search')
+    word = word.encode('utf-8')
     types = request.form.get('type')
+    types = types.encode('utf-8')
 
     if types == "0":
         q = " WHERE 1 "
@@ -488,27 +491,30 @@ def deleteStock():
 @app.route('/search_disease', methods=['POST'])
 def searchDisease():
     word = request.form.get('search')
+    word = word.encode('utf-8')
     result = query("SELECT * FROM disease WHERE `DISEASE_NAME` LIKE %s", True, False, True,
                    "%{}%".format(word))
     if result:
         return result
     return ""
 
-@app.route('/search_symptom', methods=['POST'])
-def searchSymptom():
-    word = request.form.get('search')
-    corpus = []
-    try:
-        for i in similar_words(word):
-            corpus.append(i[0])
-        return json.dumps(corpus)
-    except:
-        return ""
+# @app.route('/search_symptom', methods=['POST'])
+# def searchSymptom():
+#     word = request.form.get('search')
+#     word = word.encode('utf-8')
+#     corpus = []
+#     try:
+#         for i in similar_words(word):
+#             corpus.append(i[0])
+#         return json.dumps(corpus)
+#     except:
+#         return ""
 
 
 @app.route('/search_medicine', methods=['POST'])
 def searchMedicine():
     word = request.form.get('search')
+    word = word.encode('utf-8')
     result = query("SELECT * FROM medicine WHERE `MEDI_NAME` LIKE %s", True, False, True,
                    "%{}%".format(word))
     if result:
@@ -520,7 +526,7 @@ def searchMedicine():
 def disease():
     s = set()
     words2 = request.form.getlist('word2[]')
-
+    words2 = [w.encode('utf-8') for w in words2]
 
     if len(words2) > 0:
         for word in words2:
