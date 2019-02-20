@@ -175,11 +175,24 @@ def petLoginAPP():
         if not result:
             return "error"
         else:
-            return 0
+            return "0"
     pet_id = result["PET_ID"]
     return pet_id
 
+@app.route('/petChatApp', methods=['POST'])
+def petChatApp():
+    pet_id = request.form.get('pet_id')
 
+    q = "UPDATE `pet` SET PET_CHAT = PET_CHAT + 1 WHERE PET_ID = %s";
+    query(q, False, False, False, pet_id)
+    q = "SELECT PET_CHAT FROM `pet` WHERE PET_ID = %s";
+    result = query(q, True, True, False, pet_id)
+    if result:
+        return result["PET_CHAT"], 200
+    else:
+        return "6", 200
+
+    return ""
 @app.route('/petLogin', methods=['POST'])
 def petLogin():
     pet_id = request.form.get('pet_id');
