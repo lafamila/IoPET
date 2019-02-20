@@ -170,8 +170,12 @@ def petLoginAPP():
     q = "SELECT * FROM `user` WHERE USER_ID = %s AND USER_PW = %s"
     result = query(q, True, True, False, user_id, user_pw)
     if not result:
-
-        return "error"
+        q = "SELECT * FROM `doctor` WHERE DOCTOR_ID = %s AND DOCTOR_PW = %s"
+        result = query(q,True, True, False, user_id, user_pw)
+        if not result:
+            return "error"
+        else:
+            return 0
     pet_id = result["PET_ID"]
     return pet_id
 
@@ -184,7 +188,8 @@ def petLogin():
 
     if result:
         return result["ROOM_ID"], 200
-
+    elif int(pet_id) == 0:
+        return "0", 200
     return "", 404
 
 @app.route('/chatList', methods=['POST'])
@@ -200,7 +205,9 @@ def getChat():
 @app.route('/chat_search', methods=['POST'])
 def getChatSearched():
     hospt_id = session["hospital_id"]
-    search = request.form.get('keyword').encode('utf-8')
+    search = request.form.get('keyword')
+    if search:
+        search = search.encode('utf-8')
     q = "SELECT * FROM `pet` join `chat_room` on pet.PET_ID = chat_room.PET_ID and pet.HOSPITAL_ID = chat_room.HOSPITAL_ID WHERE pet.HOSPITAL_ID = %s AND (pet.PET_NAME LIKE %s or pet.PET_PERSON LIKE %s)"
     result = query(q, True, False, True, hospt_id, "%{}%".format(search), "%{}%".format(search))
     return result if result else ""
@@ -318,7 +325,9 @@ def personal():
 def allPerson():
     hospt_id = request.form.get('hospt_id')
     page = request.form.get('page')
-    search = request.form.get('search').encode('utf-8')
+    search = request.form.get('search')
+    if search:
+        search = search.encode('utf-8')
     if page is None:
         page = 0
     elif type(page) != type(1):
