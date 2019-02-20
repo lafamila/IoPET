@@ -210,6 +210,16 @@ def petMedicineApp():
     query(q, False, False, False, pet_id, medicine_name, morning, lunch, dinner)
     return ""
 
+@app.route('/petGetMediApp', methods=['POST'])
+def petMedicineApp():
+    pet_id = request.form.get('pet_id')
+    q = "SELECT * FROM `pet_medicine` WHERE PET_ID = %s"
+    result = query(q, True, False, True, pet_id)
+    if result:
+        return "", 404
+    else:
+        return result, 200
+
 
 @app.route('/petLogin', methods=['POST'])
 def petLogin():
