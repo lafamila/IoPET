@@ -211,14 +211,14 @@ def petMedicineApp():
     return ""
 
 @app.route('/petGetMediApp', methods=['POST'])
-def petMedicineApp():
+def petGetMediApp():
     pet_id = request.form.get('pet_id')
     q = "SELECT * FROM `pet_medicine` WHERE PET_ID = %s"
     result = query(q, True, False, True, pet_id)
     if result:
-        return "", 404
-    else:
         return result, 200
+    else:
+        return "", 404
 
 
 @app.route('/petLogin', methods=['POST'])
