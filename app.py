@@ -182,7 +182,11 @@ def petLoginAPP():
 @app.route('/petChatApp', methods=['POST'])
 def petChatApp():
     pet_id = request.form.get('pet_id')
-
+    result = query("SELECT `PET_ID` FROM `chat_room` WHERE ROOM_ID = %s", True, True, False, pet_id)
+    if result:
+        pet_id = result["PET_ID"]
+    else:
+        return "6", 200
     q = "UPDATE `pet` SET PET_CHAT = PET_CHAT + 1 WHERE PET_ID = %s";
     query(q, False, False, False, pet_id)
     q = "SELECT PET_CHAT FROM `pet` WHERE PET_ID = %s";
