@@ -197,6 +197,20 @@ def petChatApp():
         return "6", 200
 
     return ""
+
+@app.route('/petMedicineApp', methods=['POST'])
+def petMedicineApp():
+    pet_id = request.form.get('pet_id')
+    medicine_name = request.form.get('medicine_name')
+    morning = request.form.get('medicine_morning')
+    lunch = request.form.get('medicine_lunch')
+    dinner = request.form.get('medicine_dinner')
+    date = request.form.get('medicine_date')
+    q = "INSERT INTO `pet_medicine`(`PET_ID`, `MEDICINE_NAME`, `MEDICINE_DATE`, `MEDICINE_MORNING`, `MEDICINE_LUNCH`, `MEDICINE_DINNER`) VALUES (%s, %s, DATE(NOW() + INTERVAL {0} DAY), %s, %s, %s)".format(date)
+    query(q, False, False, False, pet_id, medicine_name, morning, lunch, dinner)
+    return ""
+
+
 @app.route('/petLogin', methods=['POST'])
 def petLogin():
     pet_id = request.form.get('pet_id');
