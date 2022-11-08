@@ -26,7 +26,7 @@ def query(q, isResult, isOne, isJson, *data):
                             v = v.encode('utf-8')
                     if type(v) != type(1) or type(v) != type('1'):
                         row[k] = str(v)
-                        row[k] = row[k].decode('utf-8')
+                        #row[k] = row[k].decode('utf-8')
 
         if isOne:
             rows = rows[0]
